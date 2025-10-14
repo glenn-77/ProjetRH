@@ -18,7 +18,6 @@ CREATE TABLE employee (
   grade VARCHAR(50),
   poste VARCHAR(100),
   date_embauche DATE,
-  photo_path VARCHAR(255),
   department_id BIGINT,
   password VARCHAR(255),
   CONSTRAINT fk_emp_dept FOREIGN KEY (department_id) REFERENCES department(id)
