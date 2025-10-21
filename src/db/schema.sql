@@ -35,12 +35,15 @@ CREATE INDEX idx_employee_department ON employee(department_id);
 CREATE TABLE project (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(150) NOT NULL,
+  manager_id BIGINT NULL,
   description TEXT,
   start_date DATE,
   end_date DATE,
-  status VARCHAR(20) DEFAULT 'IN_PROGRESS' CHECK (status IN ('IN_PROGRESS','COMPLETED','CANCELLED'))
+  status VARCHAR(20) DEFAULT 'IN_PROGRESS' CHECK (status IN ('IN_PROGRESS','COMPLETED','CANCELLED')),
+  CONSTRAINT fk_project_manager FOREIGN KEY (manager_id)
+          REFERENCES employee(id)
+          ON DELETE SET NULL
 );
-
 
 CREATE TABLE employee_project (
   employee_id BIGINT,
