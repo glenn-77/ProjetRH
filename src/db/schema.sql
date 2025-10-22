@@ -17,12 +17,12 @@ CREATE TABLE employee (
   birth_date DATE,
   email VARCHAR(150) UNIQUE,
   phone VARCHAR(30),
+  address VARCHAR(255),
   base_salary DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   grade VARCHAR(50),
   position VARCHAR(100),
   hire_date DATE,
   department_id BIGINT,
-  password VARCHAR(255),
   CONSTRAINT fk_employee_department FOREIGN KEY (department_id)
       REFERENCES department(id)
       ON DELETE SET NULL
@@ -39,7 +39,7 @@ CREATE TABLE project (
   description TEXT,
   start_date DATE,
   end_date DATE,
-  status VARCHAR(20) DEFAULT 'IN_PROGRESS' CHECK (status IN ('IN_PROGRESS','COMPLETED','CANCELLED')),
+  status ENUM('IN_PROGRESS','COMPLETED','CANCELLED') DEFAULT 'IN_PROGRESS',
   CONSTRAINT fk_project_manager FOREIGN KEY (manager_id)
           REFERENCES employee(id)
           ON DELETE SET NULL
@@ -59,7 +59,7 @@ CREATE TABLE employee_project (
 );
 
 
-CREATE TABLE pay_slip (
+CREATE TABLE payslip (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   employee_id BIGINT NOT NULL,
   year INT NOT NULL,
@@ -88,16 +88,4 @@ CREATE TABLE user (
   CONSTRAINT fk_user_employee FOREIGN KEY (employee_id)
       REFERENCES employee(id)
       ON DELETE SET NULL
-);
-
-CREATE TABLE user_role (
-  user_id BIGINT,
-  role_id BIGINT,
-  PRIMARY KEY(user_id, role_id),
-  CONSTRAINT fk_userrole_user FOREIGN KEY (user_id)
-      REFERENCES user(id)
-      ON DELETE CASCADE,
-  CONSTRAINT fk_userrole_role FOREIGN KEY (role_id)
-      REFERENCES role(id)
-      ON DELETE CASCADE
 );
