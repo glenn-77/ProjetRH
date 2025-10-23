@@ -1,13 +1,13 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<head>
-    <title>JSP - Hello World</title>
-</head>
+<head><title>Accueil</title></head>
 <body>
-<h1><%= "Hello World!" %>
-</h1>
-<br/>
-<a href="hello-servlet">Hello Servlet</a>
+<h2>Bienvenue dans le système de gestion RH</h2>
+<ul>
+    <li><a href="employe?action=list">Employés</a></li>
+    <li><a href="departement?action=list">Départements</a></li>
+    <li><a href="projet?action=list">Projets</a></li>
+    <li><a href="fiche">Fiches de paie</a></li>
+</ul>
 </body>
 </html>
