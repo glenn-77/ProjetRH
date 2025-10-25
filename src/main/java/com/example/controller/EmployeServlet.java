@@ -49,6 +49,20 @@ public class EmployeServlet extends HttpServlet {
                 }
                 break;
 
+            case "listByGrade":
+                List<Employe> byGrade = employeDAO.getAllOrderByGrade();
+                request.setAttribute("employes", byGrade);
+                RequestDispatcher gradeDispatcher = request.getRequestDispatcher("jsp/employes.jsp");
+                gradeDispatcher.forward(request, response);
+                break;
+
+            case "listByPoste":
+                List<Employe> byPoste = employeDAO.getAllOrderByPoste();
+                request.setAttribute("employes", byPoste);
+                RequestDispatcher posteDispatcher = request.getRequestDispatcher("jsp/employes.jsp");
+                posteDispatcher.forward(request, response);
+                break;
+
             case "delete": // --- SUPPRIMER EMPLOYÉ ---
                 try {
                     int idDel = Integer.parseInt(request.getParameter("id"));

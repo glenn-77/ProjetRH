@@ -15,6 +15,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold">Liste des Employés</h2>
         <a href="employe?action=add" class="btn btn-primary">+ Ajouter un Employé</a>
+        <a href="${pageContext.request.contextPath}/employe?action=list" class="btn btn-secondary btn-sm">Tous</a>
+        <a href="${pageContext.request.contextPath}/employe?action=listByGrade" class="btn btn-primary btn-sm">Par grade</a>
+        <a href="${pageContext.request.contextPath}/employe?action=listByPoste" class="btn btn-success btn-sm">Par poste</a>
     </div>
 
     <table class="table table-hover table-striped table-bordered shadow-sm">

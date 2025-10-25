@@ -92,6 +92,31 @@ public class EmployeDAO {
     }
 
     /**
+     *  Liste des employés triés par grade (ordre alphabétique du grade)
+     */
+    public List<Employe> getAllOrderByGrade() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Employe ORDER BY grade ASC", Employe.class).list();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     *  Liste des employés triés par poste
+     */
+    public List<Employe> getAllOrderByPoste() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Employe ORDER BY poste ASC", Employe.class).list();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
      *  Récupère tous les employés d’un département donné
      */
     public List<Employe> getByDepartement(int idDept) {
