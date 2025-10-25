@@ -25,6 +25,10 @@
             <th>Description</th>
             <th>Date début</th>
             <th>Date fin</th>
+            <th>Avancement du projet</th>
+            <th>Budget (€)</th>
+            <th>Chef de projet</th>
+            <th>Membres du projet</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -36,6 +40,18 @@
                 <td>${projet.description}</td>
                 <td>${projet.dateDebut}</td>
                 <td>${projet.dateFin}</td>
+                <td>${projet.etat}</td>
+                <td>${projet.budget}</td>
+                <td>${projet.chefProjet.nom} ${projet.chefProjet.prenom}</td>
+                <td>
+                    <c:forEach var="e" items="${projet.employes}">
+                        <span class="badge bg-secondary">${e.nom} ${e.prenom}</span>
+                    </c:forEach>
+                    <c:if test="${empty projet.employes}">
+                        <span class="text-muted">Aucun</span>
+                    </c:if>
+                </td>
+
                 <td>
                     <a href="${pageContext.request.contextPath}/projet?action=edit&id=${projet.id}" class="btn btn-sm btn-primary">Modifier</a>
                     <a href="${pageContext.request.contextPath}/projet?action=delete&id=${projet.id}"

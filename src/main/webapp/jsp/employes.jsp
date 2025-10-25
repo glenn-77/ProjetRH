@@ -27,6 +27,8 @@
             <th>Nom</th>
             <th>Prénom</th>
             <th>Département</th>
+            <th>Grade</th>
+            <th>Poste</th>
             <th class="text-center">Actions</th>
         </tr>
         </thead>
@@ -40,6 +42,8 @@
             <td><%=e.getNom()%></td>
             <td><%=e.getPrenom()%></td>
             <td><%= (e.getDepartement()!=null ? e.getDepartement().getNom() : "—") %></td>
+            <td><%=e.getGrade()%></td>
+            <td><%=e.getPoste()%></td>
             <td class="text-center">
                 <a href="employe?action=edit&id=<%=e.getId()%>" class="btn btn-sm btn-outline-primary">Modifier</a>
                 <a href="employe?action=delete&id=<%=e.getId()%>" class="btn btn-sm btn-outline-danger ms-1">Supprimer</a>

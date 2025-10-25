@@ -41,6 +41,53 @@
                 </div>
             </div>
 
+            <div class="mb-3">
+                <label for="etat" class="form-label">Avancement du projet :</label>
+                <select id="etat" name="etat" class="form-select" required>
+                    <option value="EN_COURS" ${projet != null && projet.etat == 'EN_COURS' ? 'selected' : ''}>En cours</option>
+                    <option value="TERMINE" ${projet != null && projet.etat == 'TERMINE' ? 'selected' : ''}>Terminé</option>
+                    <option value="ANNULE" ${projet != null && projet.etat == 'ANNULE' ? 'selected' : ''}>Annulé</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="budget" class="form-label">Budget (€) :</label>
+                <input type="number" step="0.01" id="budget" name="budget" class="form-control"
+                       value="${projet != null ? projet.budget : ''}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="chefId" class="form-label">Chef de projet :</label>
+                <select id="chefId" name="chefId" class="form-select" required>
+                    <option value="">-- Sélectionner un chef de projet --</option>
+                    <c:forEach var="emp" items="${employes}">
+                        <option value="${emp.id}"
+                            ${projet != null && projet.chefProjet != null && projet.chefProjet.id == emp.id ? "selected" : ""}>
+                                ${emp.nom} ${emp.prenom} (${emp.poste})
+                        </option>
+                    </c:forEach>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Employés assignés :</label>
+                <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto;">
+                    <c:forEach var="emp" items="${employes}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="employesAssignes"
+                                   value="${emp.id}"
+                                   id="emp-${emp.id}"
+                                   <c:if test="${projet != null && projet.employes != null && projet.employes.contains(emp)}">checked</c:if>>
+                            <label class="form-check-label" for="emp-${emp.id}">
+                                    ${emp.nom} ${emp.prenom} (${emp.poste})
+                            </label>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+
+
             <div class="text-center">
                 <button type="submit" class="btn btn-primary px-4">${projet != null ? "Mettre à jour" : "Créer"}</button>
                 <a href="${pageContext.request.contextPath}/projet?action=list" class="btn btn-secondary ms-2">Annuler</a>
