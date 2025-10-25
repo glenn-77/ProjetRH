@@ -79,7 +79,7 @@ public class FicheDePaie {
         this.deduction = deduction;
     }
 
-    public LocalDate getDate_generation() {
+    public LocalDate getDateGeneration() {
         return date_generation;
     }
 
