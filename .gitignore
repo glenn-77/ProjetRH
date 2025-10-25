@@ -37,3 +37,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignore .idea directory
+.idea/
+#Ignore hibernate file
+src/main/resources/hibernate.cfg.xml
