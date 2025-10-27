@@ -34,7 +34,7 @@
     <table class="table table-hover table-striped table-bordered shadow-sm">
         <thead class="table-light">
         <tr>
-            <th>ID</th>
+            <th>Matricule</th>
             <th>Nom</th>
             <th>Prénom</th>
             <th>Département</th>
@@ -49,7 +49,7 @@
             for (Employe e : employes) {
         %>
         <tr>
-            <td><%=e.getId()%></td>
+            <td><%=e.getMatricule()%></td>
             <td><%=e.getNom()%></td>
             <td><%=e.getPrenom()%></td>
             <td><%= (e.getDepartement()!=null ? e.getDepartement().getNom() : "—") %></td>
