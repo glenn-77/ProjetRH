@@ -2,22 +2,27 @@ package com.example.controller;
 
 import com.example.dao.EmployeDAO;
 import com.example.dao.DepartementDAO;
+import com.example.dao.ProjetDAO;
 import com.example.model.Employe;
 import com.example.model.Departement;
 
 import com.example.model.Grade;
+import com.example.model.Projet;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @WebServlet("/employe")
 public class EmployeServlet extends HttpServlet {
 
     private final EmployeDAO employeDAO = new EmployeDAO();
     private final DepartementDAO departementDAO = new DepartementDAO();
+    private final ProjetDAO projetDAO = new ProjetDAO();
 
     /**
      * Gère les actions GET : liste, ajout, édition, suppression
@@ -63,7 +68,21 @@ public class EmployeServlet extends HttpServlet {
                 posteDispatcher.forward(request, response);
                 break;
 
-            case "delete": // --- SUPPRIMER EMPLOYÉ ---
+            case "affecter": // afficher la page d’affectation
+                try {
+                    int employeId = Integer.parseInt(request.getParameter("id"));
+                    Employe employe = employeDAO.getById(employeId);
+                    List<Projet> projets = projetDAO.getAll();
+
+                    request.setAttribute("employe", employe);
+                    request.setAttribute("projets", projets);
+                    request.getRequestDispatcher("jsp/affectations.jsp").forward(request, response);
+                } catch (NumberFormatException e) {
+                    response.sendRedirect("employe?action=list");
+                }
+                break;
+
+            case "delete":
                 try {
                     int idDel = Integer.parseInt(request.getParameter("id"));
                     employeDAO.delete(idDel);
@@ -71,6 +90,14 @@ public class EmployeServlet extends HttpServlet {
                     e.printStackTrace();
                 }
                 response.sendRedirect("employe?action=list");
+                break;
+
+            case "search":
+                String keyword = request.getParameter("keyword");
+                List<Employe> results = employeDAO.search(keyword);
+                request.setAttribute("employes", results);
+                request.setAttribute("keyword", keyword); // pour réafficher dans le champ
+                request.getRequestDispatcher("jsp/employes.jsp").forward(request, response);
                 break;
 
             default: // --- AFFICHER LISTE DES EMPLOYÉS ---
@@ -97,6 +124,26 @@ public class EmployeServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
+        if ("affecter".equals(request.getParameter("formType"))) {
+            int empId = Integer.parseInt(request.getParameter("id"));
+            String[] projetIds = request.getParameterValues("projets");
+
+            Employe emp = employeDAO.getById(empId);
+            Set<Projet> projetsAffectes = new HashSet<>();
+
+            if (projetIds != null) {
+                for (String pid : projetIds) {
+                    Projet p = projetDAO.getById(Integer.parseInt(pid));
+                    projetsAffectes.add(p);
+                }
+            }
+
+            emp.setProjets(projetsAffectes);
+            employeDAO.update(emp);
+            response.sendRedirect("employe?action=list");
+            return;
+        }
 
         //  Récupération sécurisée des paramètres
         String idStr = request.getParameter("id");

@@ -2,6 +2,7 @@ package com.example.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -41,13 +42,12 @@ public class Projet {
     private Date dateFin;
 
     // Liste des employés associés à ce projet
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "employe_projet",
             joinColumns = @JoinColumn(name = "projet_id"),
             inverseJoinColumns = @JoinColumn(name = "employe_id")
-    )
-    private Set<Employe> employes;
+    )    private Set<Employe> employes;
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
@@ -164,5 +164,28 @@ public class Projet {
                 ", dateDebut=" + dateDebut +
                 ", dateFin=" + dateFin +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Projet)) return false;
+        Projet projet = (Projet) o;
+        return id == projet.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public void addEmploye(Employe e) {
+        employes.add(e);
+        e.getProjets().add(this);
+    }
+
+    public void removeEmploye(Employe e) {
+        employes.remove(e);
+        e.getProjets().remove(this);
     }
 }

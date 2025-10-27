@@ -9,11 +9,14 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @WebServlet("/departement")
 public class DepartementServlet extends HttpServlet {
     private final DepartementDAO departementDAO = new DepartementDAO();
+    private final EmployeDAO employeDAO = new EmployeDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -23,6 +26,14 @@ public class DepartementServlet extends HttpServlet {
         switch (action) {
             case "add":
                 request.setAttribute("employes", new EmployeDAO().getAll());
+                request.getRequestDispatcher("jsp/departements-form.jsp").forward(request, response);
+                break;
+            case "edit":
+                int idEdit = Integer.parseInt(request.getParameter("id"));
+                Departement departement = departementDAO.getById(idEdit);
+                List<Employe> employes = employeDAO.getAll();
+                request.setAttribute("departement", departement);
+                request.setAttribute("employes", employes);
                 request.getRequestDispatcher("jsp/departements-form.jsp").forward(request, response);
                 break;
             case "delete":
@@ -37,17 +48,39 @@ public class DepartementServlet extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Departement d = new Departement();
-        d.setNom(request.getParameter("nom"));
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String idStr = request.getParameter("id");
+        String nom = request.getParameter("nom");
         String chefIdStr = request.getParameter("chefId");
+        String[] employeIds = request.getParameterValues("employes");
+
+        Employe chef = null;
         if (chefIdStr != null && !chefIdStr.isEmpty()) {
-            int chefId = Integer.parseInt(chefIdStr);
-            Employe chef = new Employe();
-            chef.setId(chefId);
-            d.setChef(chef);
+            chef = new Employe();
+            chef.setId(Integer.parseInt(chefIdStr));
         }
-        departementDAO.save(d);
+
+        Departement d = new Departement();
+        d.setNom(nom);
+        d.setChef(chef);
+
+        if (idStr != null && !idStr.isEmpty()) {
+            d.setId(Long.parseLong(idStr));
+            // 🔹 On transmet les IDs d’employés sélectionnés
+            departementDAO.update(d, employeIds);
+        } else {
+            // 🔹 Pour la création, on lie directement les employés
+            if (employeIds != null) {
+                Set<Employe> selected = new HashSet<>();
+                for (String empId : employeIds) {
+                    Employe e = new Employe();
+                    e.setId(Long.parseLong(empId));
+                    selected.add(e);
+                }
+                d.setEmployes(selected);
+            }
+            departementDAO.save(d);
+        }
         response.sendRedirect("departement?action=list");
     }
 }

@@ -4,7 +4,6 @@ import com.example.dao.ProjetDAO;
 import com.example.model.EtatProjet;
 import com.example.model.Projet;
 
-import jakarta.ejb.Local;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -20,13 +19,13 @@ import com.example.model.Employe;
 
 @WebServlet("/projet")
 public class ProjetServlet extends HttpServlet {
-    private ProjetDAO projetDAO = new ProjetDAO();
+    private final ProjetDAO projetDAO = new ProjetDAO();
+    private final EmployeDAO employeDAO = new EmployeDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
-        EmployeDAO employeDAO = new EmployeDAO();
         switch (action) {
             case "add":
                 request.setAttribute("employes", employeDAO.getAll());
@@ -56,46 +55,61 @@ public class ProjetServlet extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Projet p = new Projet();
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String idStr = request.getParameter("id");
-
-        if (idStr != null && !idStr.isEmpty()) {
-            p.setId(Integer.parseInt(idStr));
-        }
-        p.setNom(request.getParameter("nom"));
-        p.setDescription(request.getParameter("description"));
-        p.setEtat(EtatProjet.valueOf(request.getParameter("etat")));
-        p.setBudget(Double.parseDouble(request.getParameter("budget")));
-        p.setDateDebut(Date.valueOf(request.getParameter("dateDebut")));
-        p.setDateFin(Date.valueOf(request.getParameter("dateFin")));
-        String chefIdStr = request.getParameter("chefId");
-
-        if (chefIdStr != null && !chefIdStr.isEmpty()) {
-            Employe chef = new Employe();
-            chef.setId(Integer.parseInt(chefIdStr));
-            p.setChefProjet(chef);
-        }
-
+        String nom = request.getParameter("nom");
+        String description = request.getParameter("description");
+        String etatStr = request.getParameter("etat");
+        String budgetStr = request.getParameter("budget");
+        String dateDebutStr = request.getParameter("dateDebut");
+        String dateFinStr = request.getParameter("dateFin");
         String[] employesIds = request.getParameterValues("employesAssignes");
-        if (employesIds != null) {
-            Set<Employe> employes = new HashSet<>();
-            for (String id : employesIds) {
-                Employe e = new Employe();
-                e.setId(Integer.parseInt(id));
-                employes.add(e);
-            }
-            p.setEmployes(employes);
-        }
 
-        // 🔄 Si un ID existe => update, sinon => save
+        Projet projet;
+
         if (idStr != null && !idStr.isEmpty()) {
-            projetDAO.update(p);
+            // --- UPDATE ---
+            int id = Integer.parseInt(idStr);
+            projet = projetDAO.getById(id); // chargé avec ses employés
         } else {
-            projetDAO.save(p);
+            // --- CREATE ---
+            projet = new Projet();
         }
 
-        projetDAO.save(p);
+        // --- Remplir les infos du projet ---
+        projet.setNom(nom);
+        projet.setDescription(description);
+
+        if (etatStr != null && !etatStr.isEmpty())
+            projet.setEtat(EtatProjet.valueOf(etatStr));
+
+        if (budgetStr != null && !budgetStr.isEmpty())
+            projet.setBudget(Double.parseDouble(budgetStr));
+
+        if (dateDebutStr != null && !dateDebutStr.isEmpty())
+            projet.setDateDebut(Date.valueOf(dateDebutStr));
+
+        if (dateFinStr != null && !dateFinStr.isEmpty())
+            projet.setDateFin(Date.valueOf(dateFinStr));
+
+        // --- Associer les employés sélectionnés ---
+        Set<Employe> employesAffectes = new HashSet<>();
+        if (employesIds != null) {
+            for (String empIdStr : employesIds) {
+                Employe emp = new Employe();
+                emp.setId(Integer.parseInt(empIdStr));
+                employesAffectes.add(emp);
+            }
+        }
+        projet.setEmployes(employesAffectes);
+
+        // --- Persister ---
+        if (idStr != null && !idStr.isEmpty()) {
+            projetDAO.update(projet);
+        } else {
+            projetDAO.save(projet);
+        }
+
         response.sendRedirect("projet?action=list");
     }
 }

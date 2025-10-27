@@ -1,11 +1,14 @@
 package com.example.dao;
 
 import com.example.model.Employe;
+import com.example.model.Projet;
 import com.example.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EmployeDAO {
 
@@ -35,19 +38,25 @@ public class EmployeDAO {
      */
     public void update(Employe e) {
         Transaction tx = null;
-        Session session = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
+
+            Set<Projet> attachedProjets = new HashSet<>();
+            for (Projet p : e.getProjets()) {
+                Projet managed = session.get(Projet.class, p.getId());
+                attachedProjets.add(managed);
+                managed.getEmployes().add(e);
+            }
+            e.setProjets(attachedProjets);
+
             session.merge(e);
             tx.commit();
         } catch (Exception ex) {
             if (tx != null && tx.isActive()) tx.rollback();
             ex.printStackTrace();
-        } finally {
-            if (session != null && session.isOpen()) session.close();
         }
     }
+
 
     /**
      *  Suppression d’un employé par ID
@@ -71,20 +80,36 @@ public class EmployeDAO {
      *  Récupère un employé à partir de son ID
      */
     public Employe getById(int id) {
+        Transaction tx = null;
+        Employe employe = null;
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Employe.class, id);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
+            tx = session.beginTransaction();
+
+            employe = session.createQuery(
+                            "SELECT e FROM Employe e " +
+                                    "LEFT JOIN FETCH e.departement " +
+                                    "LEFT JOIN FETCH e.projets " +
+                                    "WHERE e.id = :id", Employe.class)
+                    .setParameter("id", id)
+                    .uniqueResult();
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            e.printStackTrace();
         }
+
+        return employe;
     }
+
 
     /**
      *  Récupère tous les employés
      */
     public List<Employe> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Employe", Employe.class).list();
+            return session.createQuery("SELECT e FROM Employe e LEFT JOIN FETCH e.departement", Employe.class).list();
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -129,4 +154,33 @@ public class EmployeDAO {
             return null;
         }
     }
+
+    public List<Employe> search(String keyword) {
+        Transaction tx = null;
+        Session session = null;
+        List<Employe> employes = null;
+
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            tx = session.beginTransaction();
+
+            employes = session.createQuery(
+                            "SELECT e FROM Employe e " +
+                                    "LEFT JOIN FETCH e.departement d " +
+                                    "WHERE LOWER(e.nom) LIKE LOWER(:kw) " +
+                                    "OR LOWER(e.prenom) LIKE LOWER(:kw) " +
+                                    "OR LOWER(e.matricule) LIKE LOWER(:kw) " +
+                                    "OR LOWER(d.nom) LIKE LOWER(:kw)", Employe.class)
+                    .setParameter("kw", "%" + keyword + "%")
+                    .list();
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        }
+
+        return employes;
+    }
+
 }

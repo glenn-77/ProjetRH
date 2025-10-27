@@ -78,7 +78,11 @@
                                    name="employesAssignes"
                                    value="${emp.id}"
                                    id="emp-${emp.id}"
-                                   <c:if test="${projet != null && projet.employes != null && projet.employes.contains(emp)}">checked</c:if>>
+                            <c:if test="${projet.employes != null}">
+                            <c:forEach var="e" items="${projet.employes}">
+                                   <c:if test="${e.id == emp.id}">checked</c:if>
+                            </c:forEach>
+                            </c:if>>
                             <label class="form-check-label" for="emp-${emp.id}">
                                     ${emp.nom} ${emp.prenom} (${emp.poste})
                             </label>

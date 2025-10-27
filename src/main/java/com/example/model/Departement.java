@@ -17,7 +17,7 @@ public class Departement {
     @JoinColumn(name = "chef_id")
     private Employe chef;
 
-    @OneToMany(mappedBy = "departement")
+    @OneToMany(mappedBy = "departement", fetch = FetchType.LAZY)
     private Set<Employe> employes;
 
     public Departement() {}
@@ -37,5 +37,15 @@ public class Departement {
 
     public void setChef(Employe chef) {
         this.chef = chef;
+    }
+
+    public void addEmploye(Employe e) {
+        employes.add(e);
+        e.setDepartement(this);
+    }
+
+    public void removeEmploye(Employe e) {
+        employes.remove(e);
+        e.setDepartement(null);
     }
 }

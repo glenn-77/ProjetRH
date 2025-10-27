@@ -19,6 +19,17 @@
         <a href="${pageContext.request.contextPath}/employe?action=listByGrade" class="btn btn-primary btn-sm">Par grade</a>
         <a href="${pageContext.request.contextPath}/employe?action=listByPoste" class="btn btn-success btn-sm">Par poste</a>
     </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form class="d-flex" action="${pageContext.request.contextPath}/employe" method="get">
+            <input type="hidden" name="action" value="search">
+            <input class="form-control me-2" type="search" name="keyword" placeholder="Rechercher..."
+               value="${keyword != null ? keyword : ''}" required>
+            <button class="btn btn-primary" type="submit">Rechercher</button>
+
+            <a href="${pageContext.request.contextPath}/employe?action=list" class="btn btn-secondary">Réinitialiser</a>
+
+        </form>
+    </div>
 
     <table class="table table-hover table-striped table-bordered shadow-sm">
         <thead class="table-light">
@@ -45,6 +56,8 @@
             <td><%=e.getGrade()%></td>
             <td><%=e.getPoste()%></td>
             <td class="text-center">
+                <a href="employe?action=affecter&id=<%=e.getId()%>"
+                   class="btn btn-sm btn-outline-success">Affecter</a>
                 <a href="employe?action=edit&id=<%=e.getId()%>" class="btn btn-sm btn-outline-primary">Modifier</a>
                 <a href="employe?action=delete&id=<%=e.getId()%>" class="btn btn-sm btn-outline-danger ms-1">Supprimer</a>
             </td>

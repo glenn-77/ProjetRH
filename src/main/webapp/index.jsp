@@ -20,11 +20,20 @@
     </div>
 </nav>
 
-<div class="container text-center mt-5">
-    <h1 class="mb-4">Bienvenue dans le système de gestion RH</h1>
-    <p class="lead">Gérez facilement vos employés, départements, projets et fiches de paie.</p>
-    <a href="employe?action=list" class="btn btn-primary btn-lg mt-3">Commencer</a>
-</div>
+<main class="container">
+    <div>
+        <h1 class="mb-4">Bienvenue dans le système de gestion RH</h1>
+        <p class="lead mb-4">
+            Gérer vos employés, départements, projets et fiches de paie n’a jamais été aussi simple.
+        </p>
+        <a href="jsp/login.jsp" class="btn btn-primary btn-lg">Se connecter</a>
+        <a href="jsp/register.jsp" class="btn btn-outline-primary btn-lg ms-2">Créer un compte</a>
+    </div>
+</main>
+
+<footer>
+    <p class="mb-0">&copy; 2025 - Système de Gestion RH </p>
+</footer>
 
 </body>
 </html>

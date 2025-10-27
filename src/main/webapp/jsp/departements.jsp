@@ -1,48 +1,94 @@
-<%@ page contentType="text/html;charset=UTF-8" import="java.util.*,com.example.model.Departement" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Départements</title>
+    <title>Liste des départements</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-
 <jsp:include page="navbar.jsp" />
-
-
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Liste des Départements</h2>
-        <a href="departement?action=add" class="btn btn-primary">+ Ajouter un Département</a>
+    <h2 class="text-center mb-4">📋 Gestion des départements</h2>
+
+    <!-- Bouton d'ajout -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="${pageContext.request.contextPath}/departement?action=add" class="btn btn-success">
+            ➕ Ajouter un département
+        </a>
     </div>
 
-    <table class="table table-striped table-bordered shadow-sm align-middle">
-        <thead class="table-light">
+    <!-- Tableau principal -->
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-dark text-center">
         <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Chef de Département</th>
-            <th class="text-center">Actions</th>
+            <th>#</th>
+            <th>Nom du département</th>
+            <th>Chef du département</th>
+            <th>Employés</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <%
-            List<Departement> depts = (List<Departement>) request.getAttribute("departements");
-            for (Departement d : depts) {
-        %>
-        <tr>
-            <td><%=d.getId()%></td>
-            <td><%=d.getNom()%></td>
-            <td><%=d.getChef() != null ? d.getChef().getNom() + " " + d.getChef().getPrenom() : "—"%></td>
-            <td class="text-center">
-                <a href="departement?action=delete&id=<%=d.getId()%>"
-                   class="btn btn-sm btn-outline-danger">Supprimer</a>
-            </td>
-        </tr>
-        <% } %>
+        <c:choose>
+            <c:when test="${not empty departements}">
+                <c:forEach var="d" items="${departements}">
+                    <tr>
+                        <td class="text-center">${d.id}</td>
+                        <td>${d.nom}</td>
+
+                        <!-- Chef -->
+                        <td>
+                            <c:choose>
+                                <c:when test="${d.chef != null}">
+                                    👔 ${d.chef.prenom} ${d.chef.nom}
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="text-muted fst-italic">Aucun</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+
+                        <!-- Liste des employés -->
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty d.employes}">
+                                    <ul class="mb-0 ps-3">
+                                        <c:forEach var="e" items="${d.employes}">
+                                            <li>${e.prenom} ${e.nom} <small class="text-muted">(${e.poste})</small></li>
+                                        </c:forEach>
+                                    </ul>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="text-muted fst-italic">Aucun employé</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="text-center">
+                            <a href="${pageContext.request.contextPath}/departement?action=edit&id=${d.id}"
+                               class="btn btn-warning btn-sm me-2">Modifier</a>
+                            <a href="${pageContext.request.contextPath}/departement?action=delete&id=${d.id}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Supprimer ce département ?');">Supprimer</a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:when>
+
+            <c:otherwise>
+                <tr>
+                    <td colspan="5" class="text-center text-muted fst-italic py-4">
+                        Aucun département trouvé.
+                    </td>
+                </tr>
+            </c:otherwise>
+        </c:choose>
         </tbody>
     </table>
 </div>
+
 </body>
 </html>

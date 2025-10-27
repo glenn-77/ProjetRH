@@ -1,11 +1,15 @@
 package com.example.dao;
 
+import com.example.model.Employe;
 import com.example.model.EtatProjet;
 import com.example.model.Projet;
 import com.example.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProjetDAO {
 
@@ -31,6 +35,15 @@ public class ProjetDAO {
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             tx = session.beginTransaction();
+
+            Set<Employe> attachedEmployes = new HashSet<>();
+            for (Employe e : p.getEmployes()) {
+                Employe managed = session.get(Employe.class, e.getId());
+                attachedEmployes.add(managed);
+                managed.getProjets().add(p); // synchro inverse
+            }
+            p.setEmployes(attachedEmployes);
+
             session.merge(p);
             tx.commit();
         } catch (Exception ex) {
@@ -40,6 +53,7 @@ public class ProjetDAO {
             if (session != null && session.isOpen()) session.close();
         }
     }
+
 
     public void delete(int id) {
         Transaction tx = null;
@@ -59,23 +73,12 @@ public class ProjetDAO {
     }
 
     public Projet getById(int id) {
-        Transaction tx = null;
-        Projet projet = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            projet = session.createQuery(
-                            "SELECT DISTINCT p FROM Projet p " +
-                                    "LEFT JOIN FETCH p.chefProjet " +
-                                    "LEFT JOIN FETCH p.employes " +
-                                    "WHERE p.id = :id", Projet.class)
-                    .setParameter("id", id)
-                    .uniqueResult();
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
+            return session.createQuery(
+                    "SELECT p FROM Projet p LEFT JOIN FETCH p.employes WHERE p.id = :id",
+                    Projet.class
+            ).setParameter("id", id).uniqueResult();
         }
-        return projet;
     }
 
     public List<Projet> getAll() {

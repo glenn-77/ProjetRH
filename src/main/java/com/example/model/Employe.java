@@ -3,6 +3,8 @@ package com.example.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -41,17 +43,17 @@ public class Employe {
 
     private LocalDate dateEmbauche;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email; // Champ pour le contact de l'employé
 
     // Relation avec le département
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departement_id")
     private Departement departement;
 
     // Relation avec les projets
     @ManyToMany(mappedBy = "employes", fetch = FetchType.LAZY)
-    private Set<Projet> projets;
+    private Set<Projet> projets = new HashSet<>();
 
     @OneToMany(mappedBy = "employe", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<FicheDePaie> fichesPaie;
@@ -139,9 +141,28 @@ public class Employe {
 
     // ======= MÉTHODES UTILITAIRES =======
 
-    /**
-     * Renvoie le salaire total (salaire de base + prime - déductions)
-     */
+    public void addProjet(Projet p) {
+        projets.add(p);
+        p.getEmployes().add(this);
+    }
+
+    public void removeProjet(Projet p) {
+        projets.remove(p);
+        p.getEmployes().remove(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employe)) return false;
+        Employe employe = (Employe) o;
+        return id == employe.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
 
     /**

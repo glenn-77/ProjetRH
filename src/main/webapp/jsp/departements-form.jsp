@@ -29,7 +29,7 @@
             <div class="mb-3">
                 <label class="form-label">Chef de département :</label>
                 <select name="chefId" class="form-select">
-                    <option value="">-- Sélectionner un employé --</option>
+                    <option value="">-- Sélectionner un chef de département --</option>
                     <c:forEach var="emp" items="${employes}">
                         <option value="${emp.id}"
                             ${departement != null && departement.chef != null && departement.chef.id == emp.id ? "selected" : ""}>
@@ -37,6 +37,27 @@
                         </option>
                     </c:forEach>
                 </select>
+            </div>
+
+            <!-- Liste des employés du département -->
+            <div class="mb-3">
+                <label class="form-label">Employés du département :</label>
+                <div class="border p-3 rounded" style="max-height: 250px; overflow-y: auto;">
+                    <c:forEach var="e" items="${employes}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="employes"
+                                   value="${e.id}" id="emp${e.id}"
+                            <c:if test="${departement != null && departement.employes != null}">
+                            <c:forEach var="emp" items="${departement.employes}">
+                                   <c:if test="${emp.id == e.id}">checked</c:if>
+                            </c:forEach>
+                            </c:if>>
+                            <label class="form-check-label" for="emp${e.id}">
+                                    ${e.prenom} ${e.nom} <small class="text-muted">(${e.poste})</small>
+                            </label>
+                        </div>
+                    </c:forEach>
+                </div>
             </div>
 
             <div class="text-center">

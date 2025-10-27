@@ -36,7 +36,7 @@ public class FicheDePaieServlet extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int idEmp = Integer.parseInt(request.getParameter("employeId"));
         int mois = Integer.parseInt(request.getParameter("mois"));
         int annee = Integer.parseInt(request.getParameter("annee"));
