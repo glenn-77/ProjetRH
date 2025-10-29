@@ -11,15 +11,22 @@
 <div class="container d-flex justify-content-center align-items-center" style="height:100vh;">
     <div class="card shadow-sm p-4" style="width:400px;">
         <h2 class="text-center mb-4">Connexion</h2>
-        <form action="auth?action=login" method="post">
+
+        <form action="${pageContext.request.contextPath}/auth" method="post">
             <div class="mb-3">
                 <label class="form-label">Nom d'utilisateur</label>
-                <input type="text" name="username" class="form-control" required>
+                <input type="text" name="login" class="form-control" required>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Mot de passe</label>
-                <input type="password" name="password" class="form-control" required>
+                <input type="password" name="motDePasse" class="form-control" required>
             </div>
+
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger text-center py-2">${error}</div>
+            </c:if>
+
             <div class="text-center">
                 <button type="submit" class="btn btn-primary w-100">Se connecter</button>
             </div>
