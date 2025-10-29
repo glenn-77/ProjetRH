@@ -47,7 +47,7 @@ public class Employe {
     private String email; // Champ pour le contact de l'employé
 
     // Relation avec le département
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "departement_id")
     private Departement departement;
 

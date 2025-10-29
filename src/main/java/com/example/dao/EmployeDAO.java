@@ -108,13 +108,27 @@ public class EmployeDAO {
      *  Récupère tous les employés
      */
     public List<Employe> getAll() {
+        Transaction tx = null;
+        List<Employe> employes = null;
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("SELECT e FROM Employe e LEFT JOIN FETCH e.departement", Employe.class).list();
+            tx = session.beginTransaction();
+
+            employes = session.createQuery(
+                            "SELECT DISTINCT e FROM Employe e " +
+                                    "LEFT JOIN FETCH e.departement " +
+                                    "LEFT JOIN FETCH e.projets", Employe.class)
+                    .getResultList();
+
+            tx.commit();
         } catch (Exception ex) {
+            if (tx != null && tx.isActive()) tx.rollback();
             ex.printStackTrace();
-            return null;
         }
+
+        return employes;
     }
+
 
     /**
      *  Liste des employés triés par grade (ordre alphabétique du grade)
