@@ -27,7 +27,6 @@
             Gérer vos employés, départements, projets et fiches de paie n’a jamais été aussi simple.
         </p>
         <a href="jsp/login.jsp" class="btn btn-primary btn-lg">Se connecter</a>
-        <a href="jsp/register.jsp" class="btn btn-outline-primary btn-lg ms-2">Créer un compte</a>
     </div>
 </main>
 
