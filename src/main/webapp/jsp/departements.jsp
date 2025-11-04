@@ -10,12 +10,12 @@
 <body class="bg-light">
 <jsp:include page="navbar.jsp" />
 <div class="container mt-5">
-    <h2 class="text-center mb-4">📋 Gestion des départements</h2>
+    <h2 class="text-center mb-4">Gestion des départements</h2>
 
     <!-- Bouton d'ajout -->
     <div class="d-flex justify-content-end mb-3">
         <a href="${pageContext.request.contextPath}/departement?action=add" class="btn btn-success">
-            ➕ Ajouter un département
+            + Ajouter un département
         </a>
     </div>
 
