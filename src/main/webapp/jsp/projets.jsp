@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="role" value="${sessionScope.role}" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,7 +15,9 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold">Projets</h2>
-        <a href="${pageContext.request.contextPath}/projet?action=add" class="btn btn-success">+ Ajouter un projet</a>
+            <c:if test="${role == 'ADMINISTRATEUR'}">
+                <a href="${pageContext.request.contextPath}/projet?action=add" class="btn btn-success">+ Ajouter un projet</a>
+            </c:if>
     </div>
 
     <table class="table table-striped table-bordered shadow-sm">
@@ -29,7 +32,9 @@
             <th>Budget (€)</th>
             <th>Chef de projet</th>
             <th>Membres du projet</th>
+            <c:if test="${not (role == 'EMPLOYE')}">
             <th>Actions</th>
+            </c:if>
         </tr>
         </thead>
         <tbody>
@@ -53,10 +58,14 @@
                 </td>
 
                 <td>
-                    <a href="${pageContext.request.contextPath}/projet?action=edit&id=${projet.id}" class="btn btn-sm btn-primary">Modifier</a>
+                    <c:if test="${not (role == 'EMPLOYE')}">
+                        <a href="${pageContext.request.contextPath}/projet?action=edit&id=${projet.id}" class="btn btn-sm btn-primary">Modifier</a>
+                    </c:if>
+                    <c:if test="${role == 'ADMINISTRATEUR' or role == 'CHEF_DE_DEPARTEMENT'}">
                     <a href="${pageContext.request.contextPath}/projet?action=delete&id=${projet.id}"
                        class="btn btn-sm btn-outline-danger"
                        onclick="return confirm('Voulez-vous vraiment supprimer ce projet ?');">Supprimer</a>
+                    </c:if>
                 </td>
             </tr>
         </c:forEach>

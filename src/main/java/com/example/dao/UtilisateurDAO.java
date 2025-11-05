@@ -14,13 +14,25 @@ public class UtilisateurDAO {
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             tx = session.beginTransaction();
-            session.saveOrUpdate(u);
+            session.persist(u);
             tx.commit();
         } catch (Exception ex) {
             if (tx != null && tx.isActive()) tx.rollback();
             ex.printStackTrace();
         } finally {
             if (session != null && session.isOpen()) session.close();
+        }
+    }
+
+    public void update(Utilisateur u) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.update(u);
+            tx.commit();
+        } catch (Exception ex) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            ex.printStackTrace();
         }
     }
 

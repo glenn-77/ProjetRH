@@ -112,3 +112,8 @@ VALUES ('Dupont', 'Jean', 'E001', 'Développeur', 'Junior', 2500,  1),
 
 INSERT INTO utilisateur (login, motDePasse, role_id, employe_id)
 VALUES ('admin', 'admin', 1, 1);
+
+SELECT u.id, u.role_id, e.nom
+FROM utilisateur u
+         JOIN employe e ON u.employe_id = e.id;
+

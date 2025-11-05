@@ -1,13 +1,9 @@
 package com.example.controller;
 
-import com.example.dao.EmployeDAO;
-import com.example.dao.DepartementDAO;
-import com.example.dao.ProjetDAO;
-import com.example.model.Employe;
-import com.example.model.Departement;
+import com.example.dao.*;
+import com.example.model.*;
 
-import com.example.model.Grade;
-import com.example.model.Projet;
+import com.example.utils.PasswordUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -23,6 +19,8 @@ public class EmployeServlet extends HttpServlet {
     private final EmployeDAO employeDAO = new EmployeDAO();
     private final DepartementDAO departementDAO = new DepartementDAO();
     private final ProjetDAO projetDAO = new ProjetDAO();
+    private final UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
+    private final RoleDAO roleDAO = new RoleDAO();
 
     /**
      * Gère les actions GET : liste, ajout, édition, suppression
@@ -36,6 +34,7 @@ public class EmployeServlet extends HttpServlet {
 
         switch (action) {
             case "add": // --- AFFICHER FORMULAIRE AJOUT ---
+                request.setAttribute("roles", roleDAO.getAll());
                 request.setAttribute("departements", departementDAO.getAll());
                 RequestDispatcher addDispatcher = request.getRequestDispatcher("jsp/employes-form.jsp");
                 addDispatcher.forward(request, response);
@@ -157,8 +156,6 @@ public class EmployeServlet extends HttpServlet {
         String salaireStr = request.getParameter("salaireBase");
         String depIdStr = request.getParameter("departementId");
 
-
-
         //  Conversion sûre des nombres
         double salaireBase = parseDoubleSafe(salaireStr);
 
@@ -182,6 +179,7 @@ public class EmployeServlet extends HttpServlet {
             d.setId(deptId);
             e.setDepartement(d);
         }
+
 
         //  Si un ID existe → mise à jour, sinon → création
         if (idStr != null && !idStr.trim().isEmpty()) {
@@ -211,8 +209,23 @@ public class EmployeServlet extends HttpServlet {
             e.setMatricule(generateMatricule());
             e.setDateEmbauche(LocalDate.now());
             employeDAO.save(e);
-        }
+            Employe emp = employeDAO.getByEmail(email);
+            // --- Créer un utilisateur lié à cet employé ---
+            String randomPassword = PasswordUtil.generateRandomPassword(10);
+            String roleid = request.getParameter("roleId");
 
+            Utilisateur user = new Utilisateur();
+            user.setLogin(emp.getNom().charAt(0) + "." + emp.getPrenom()); // ou e.getMatricule() si tu préfères
+            user.setMotDePasse(randomPassword);
+            user.setEmploye(emp);
+            user.setRole(roleDAO.getById(Integer.parseInt(roleid))); // récupère le rôle par défaut
+            utilisateurDAO.save(user);
+
+            // Affiche le mot de passe dans la console (ou l’envoie par mail)
+            System.out.println("🔐 Nouveau compte créé pour " + e.getPrenom() + " " + e.getNom() +
+                    " | Login : " + user.getLogin() + " | Mot de passe : " + randomPassword);
+
+        }
 
         //  Redirection vers la liste après l’ajout ou la mise à jour
         response.sendRedirect("employe?action=list");

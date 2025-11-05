@@ -1,20 +1,19 @@
 package com.example.controller;
 
 import com.example.dao.ProjetDAO;
-import com.example.model.EtatProjet;
-import com.example.model.Projet;
+import com.example.model.*;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.example.dao.EmployeDAO;
-import com.example.model.Employe;
 
 
 @WebServlet("/projet")
@@ -23,6 +22,21 @@ public class ProjetServlet extends HttpServlet {
     private final EmployeDAO employeDAO = new EmployeDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        if (user.getRole().getNomRole() == NomRole.EMPLOYE) {
+            // Les employés n’ont accès qu’à la liste
+            String action = request.getParameter("action");
+            if (action != null && (action.equals("add") || action.equals("edit") || action.equals("delete"))) {
+                response.sendRedirect("projet?action=list");
+                return;
+            }
+        }
+
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
@@ -49,7 +63,24 @@ public class ProjetServlet extends HttpServlet {
                 response.sendRedirect("projet?action=list");
                 break;
             default:
-                List<Projet> list = projetDAO.getAll();
+                List<Projet> list = new ArrayList<>();
+                System.out.println("🔎 Rôle connecté : " + user.getRole().getNomRole());
+
+                // Si ce n'est pas un admin ou le chef de département, il ne voit que ses projets
+                if (user.getRole().getNomRole() == NomRole.EMPLOYE) {
+                    List <Projet> projets = projetDAO.getByEmploye((int) user.getEmploye().getId());
+                    if (projets != null) list.addAll(projets);
+                }
+
+                // Sinon → il voit tout
+                else if (user.getRole().getNomRole() == NomRole.ADMINISTRATEUR || user.getRole().getNomRole() == NomRole.CHEF_DE_DEPARTEMENT || user.getRole().getNomRole() == NomRole.CHEF_DE_PROJET) {
+                    list = projetDAO.getAll();
+                }
+
+                else {
+                    System.out.println("Role non vérifié !!!!");
+                }
+
                 request.setAttribute("projets", list);
                 request.getRequestDispatcher("jsp/projets.jsp").forward(request, response);
         }

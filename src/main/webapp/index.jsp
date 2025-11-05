@@ -59,19 +59,7 @@
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="#">Système RH</a>
-        <div class="ms-auto d-flex align-items-center">
-            <a class="nav-link" href="employe?action=list">Employés</a>
-            <a class="nav-link" href="departement?action=list">Départements</a>
-            <a class="nav-link" href="projet?action=list">Projets</a>
-            <a class="nav-link" href="fiche">Fiches de paie</a>
-            <a href="${pageContext.request.contextPath}/auth?action=logout" class="btn-logout">Déconnexion</a>
-        </div>
-    </div>
-</nav>
+<jsp:include page="jsp/navbar.jsp"/>
 
 <!-- CONTENU -->
 <main class="container">

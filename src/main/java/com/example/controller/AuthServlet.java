@@ -19,8 +19,12 @@ public class AuthServlet extends HttpServlet {
         Utilisateur u = utilisateurDAO.getByLogin(login, mdp);
 
         if (u != null) {
-            HttpSession session = request.getSession();
+            HttpSession oldSession = request.getSession(false);
+            if (oldSession != null) oldSession.invalidate();
+
+            HttpSession session = request.getSession(true);
             session.setAttribute("user", u);
+            session.setAttribute("role", u.getRole().getNomRole().name());
             response.sendRedirect("index.jsp");
         } else {
             request.setAttribute("error", "Identifiants invalides");

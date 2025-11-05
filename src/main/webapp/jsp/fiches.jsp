@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" import="java.util.*,com.example.model.FicheDePaie" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="role" value="${sessionScope.role}" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,7 +15,9 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold">Fiches de Paie</h2>
+    <c:if test="${role == 'ADMINISTRATEUR'}">
         <a href="${pageContext.request.contextPath}/fiche?action=add" class="btn btn-success">+ Ajouter une fiche</a>
+    </c:if>
     </div>
 
     <table class="table table-striped table-bordered shadow-sm">

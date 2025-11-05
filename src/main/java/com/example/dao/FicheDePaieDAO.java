@@ -1,6 +1,7 @@
 package com.example.dao;
 
 import com.example.model.FicheDePaie;
+import com.example.model.Projet;
 import com.example.utils.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -47,17 +48,20 @@ public class FicheDePaieDAO {
         }
     }
 
-    public List<FicheDePaie> getByEmploye(int idEmp) {
+    public List<FicheDePaie> getByEmploye(int employeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from FicheDePaie where employe.id = :idEmp", FicheDePaie.class)
-                    .setParameter("idEmp", idEmp)
+            return session.createQuery(
+                            "SELECT DISTINCT f FROM FicheDePaie f JOIN f.employe e WHERE e.id = :employeId",
+                            FicheDePaie.class
+                    )
+                    .setParameter("employeId", employeId)
                     .list();
         }
     }
 
     public List<FicheDePaie> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from FicheDePaie", FicheDePaie.class).list();
+            return session.createQuery("SELECT DISTINCT f from FicheDePaie f LEFT JOIN FETCH f.employe", FicheDePaie.class).list();
         }
     }
 }

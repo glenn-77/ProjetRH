@@ -15,9 +15,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/index.jsp">Accueil</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/employe?action=list">Employés</a>
-                </li>
+                <c:if test="${not (role == 'EMPLOYE')}">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/employe?action=list">Employés</a>
+                    </li>
+                </c:if>
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/departement?action=list">Départements</a>
                 </li>
@@ -26,6 +28,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/fiche">Fiches de paie</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/profil">Mon Profil</a>
                 </li>
                 <li class="nav-item ms-2">
                     <a class="btn btn-danger btn-sm" href="${pageContext.request.contextPath}/auth?action=logout">Déconnexion</a>

@@ -75,11 +75,35 @@ public class ProjetDAO {
     public Projet getById(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
-                    "SELECT p FROM Projet p LEFT JOIN FETCH p.employes WHERE p.id = :id",
+                    "SELECT p FROM Projet p LEFT JOIN FETCH p.chefProjet LEFT JOIN FETCH p.employes WHERE p.id = :id",
                     Projet.class
             ).setParameter("id", id).uniqueResult();
         }
     }
+
+    public List<Projet> getByEmploye(int employeId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT p FROM Projet p JOIN p.employes e WHERE e.id = :employeId",
+                            Projet.class
+                    )
+                    .setParameter("employeId", employeId)
+                    .list();
+        }
+    }
+
+
+    public List<Projet> getByChef(int chefId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT p FROM Projet p JOIN p.chefProjet c WHERE c.id = :chefId",
+                            Projet.class
+                    )
+                    .setParameter("employeId", chefId)
+                    .list();
+        }
+    }
+
 
     public List<Projet> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

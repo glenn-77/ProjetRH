@@ -45,7 +45,12 @@ public class DepartementDAO {
             if (managedDept == null) throw new RuntimeException("Département introuvable");
 
             managedDept.setNom(d.getNom());
-            managedDept.setChef(d.getChef());
+
+            if (d.getChef() != null) {
+                Employe attachedChef = session.get(Employe.class, d.getChef().getId());
+                managedDept.setChef(attachedChef);
+                attachedChef.setDepartement(managedDept); // chef lié à son département
+            }
 
             // 🔸 Détacher les anciens employés
             for (Employe e : managedDept.getEmployes()) {
@@ -58,7 +63,7 @@ public class DepartementDAO {
                 Set<Employe> attached = new HashSet<>();
                 for (String idStr : employeIds) {
                     int empId = Integer.parseInt(idStr);
-                    Employe emp = session.get(Employe.class, empId); // ✅ employé existant
+                    Employe emp = session.get(Employe.class, empId); //  employé existant
                     if (emp != null) {
                         emp.setDepartement(managedDept);
                         managedDept.getEmployes().add(emp);
@@ -107,6 +112,32 @@ public class DepartementDAO {
         }
     }
 
+    public Departement findByChefId(int chefId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT d FROM Departement d LEFT JOIN FETCH d.employes LEFT JOIN FETCH d.chef WHERE d.chef.id = :chefId",
+                            Departement.class
+                    )
+                    .setParameter("chefId", chefId)
+                    .uniqueResult();
+        }
+    }
+
+
+    public Departement findByEmployeId(int employeId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT d FROM Departement d " +
+                                    "LEFT JOIN FETCH d.employes " +
+                                    "LEFT JOIN FETCH d.chef " +
+                                    "JOIN d.employes e " +
+                                    "WHERE e.id = :employeId",
+                            Departement.class
+                    )
+                    .setParameter("employeId", employeId)
+                    .uniqueResult();
+        }
+    }
 
     public List<Departement> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

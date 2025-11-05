@@ -90,7 +90,7 @@ public class EmployeDAO {
                             "SELECT e FROM Employe e " +
                                     "LEFT JOIN FETCH e.departement " +
                                     "LEFT JOIN FETCH e.projets " +
-                                    "WHERE e.id = :id", Employe.class)
+                                    "LEFT JOIN FETCH e.fichesPaie WHERE e.id = :id", Employe.class)
                     .setParameter("id", id)
                     .uniqueResult();
 
@@ -102,6 +102,15 @@ public class EmployeDAO {
 
         return employe;
     }
+
+    public Employe getByEmail(String email) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Employe WHERE email = :email", Employe.class)
+                    .setParameter("email", email)
+                    .uniqueResult();
+        }
+    }
+
 
 
     /**
@@ -117,7 +126,7 @@ public class EmployeDAO {
             employes = session.createQuery(
                             "SELECT DISTINCT e FROM Employe e " +
                                     "LEFT JOIN FETCH e.departement " +
-                                    "LEFT JOIN FETCH e.projets", Employe.class)
+                                    "LEFT JOIN FETCH e.projets LEFT JOIN FETCH e.fichesPaie", Employe.class)
                     .getResultList();
 
             tx.commit();

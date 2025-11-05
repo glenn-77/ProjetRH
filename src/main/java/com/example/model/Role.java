@@ -10,7 +10,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nom", nullable = false)
+    @Enumerated(EnumType.STRING)
     private NomRole nomRole;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)

@@ -11,13 +11,16 @@
 <jsp:include page="navbar.jsp" />
 <div class="container mt-5">
     <h2 class="text-center mb-4">Gestion des départements</h2>
+    <p>Rôle connecté : ${sessionScope.user.role.nomRole.name()}</p>
 
     <!-- Bouton d'ajout -->
-    <div class="d-flex justify-content-end mb-3">
-        <a href="${pageContext.request.contextPath}/departement?action=add" class="btn btn-success">
-            + Ajouter un département
-        </a>
-    </div>
+    <c:if test="${role == 'ADMINISTRATEUR'}">
+        <div class="d-flex justify-content-end mb-3">
+            <a href="${pageContext.request.contextPath}/departement?action=add" class="btn btn-success">
+                + Ajouter un département
+            </a>
+        </div>
+    </c:if>
 
     <!-- Tableau principal -->
     <table class="table table-bordered table-hover align-middle shadow-sm">
@@ -27,7 +30,9 @@
             <th>Nom du département</th>
             <th>Chef du département</th>
             <th>Employés</th>
+            <c:if test="${role == 'ADMINISTRATEUR' or role == 'CHEF_DE_DEPARTEMENT'}">
             <th>Actions</th>
+            </c:if>
         </tr>
         </thead>
         <tbody>
@@ -67,13 +72,17 @@
                         </td>
 
                         <!-- Actions -->
-                        <td class="text-center">
-                            <a href="${pageContext.request.contextPath}/departement?action=edit&id=${d.id}"
-                               class="btn btn-warning btn-sm me-2">Modifier</a>
-                            <a href="${pageContext.request.contextPath}/departement?action=delete&id=${d.id}"
-                               class="btn btn-danger btn-sm"
+                        <c:if test="${role == 'ADMINISTRATEUR' or role == 'CHEF_DE_DEPARTEMENT'}">
+                            <td class="text-center">
+                                <a href="${pageContext.request.contextPath}/departement?action=edit&id=${d.id}"
+                                class="btn btn-warning btn-sm me-2">Modifier</a>
+                        </c:if>
+                        <c:if test="${role == 'ADMINISTRATEUR'}">
+                                <a href="${pageContext.request.contextPath}/departement?action=delete&id=${d.id}"
+                                class="btn btn-danger btn-sm"
                                onclick="return confirm('Supprimer ce département ?');">Supprimer</a>
-                        </td>
+                            </td>
+                        </c:if>
                     </tr>
                 </c:forEach>
             </c:when>
