@@ -58,7 +58,7 @@
 
             <div class="mb-3">
                 <label for="chefId" class="form-label">Chef de projet :</label>
-                <select id="chefId" name="chefId" class="form-select" required>
+                <select id="chefId" name="chefId" class="form-select">
                     <option value="">-- Sélectionner un chef de projet --</option>
                     <c:forEach var="emp" items="${employes}">
                         <option value="${emp.id}"
@@ -78,7 +78,7 @@
                                    name="employesAssignes"
                                    value="${emp.id}"
                                    id="emp-${emp.id}"
-                            <c:if test="${projet.employes != null}">
+                            <c:if test="${projet != null && projet.employes != null}">
                             <c:forEach var="e" items="${projet.employes}">
                                    <c:if test="${e.id == emp.id}">checked</c:if>
                             </c:forEach>
@@ -90,7 +90,6 @@
                     </c:forEach>
                 </div>
             </div>
-
 
             <div class="text-center">
                 <button type="submit" class="btn btn-primary px-4">${projet != null ? "Mettre à jour" : "Créer"}</button>
