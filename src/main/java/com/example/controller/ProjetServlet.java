@@ -1,92 +1,106 @@
 package com.example.controller;
 
+import com.example.dao.EmployeDAO;
 import com.example.dao.ProjetDAO;
 import com.example.model.*;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.example.dao.EmployeDAO;
-
+import java.util.*;
 
 @WebServlet("/projet")
 public class ProjetServlet extends HttpServlet {
     private final ProjetDAO projetDAO = new ProjetDAO();
     private final EmployeDAO employeDAO = new EmployeDAO();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login.jsp");
+        if (user == null) { response.sendRedirect("login.jsp"); return; }
+
+        NomRole role = user.getRole().getNomRole();
+        String action = Optional.ofNullable(request.getParameter("action")).orElse("list");
+
+        boolean isEmploye = (role == NomRole.EMPLOYE);
+        boolean isChefProjet = (role == NomRole.CHEF_DE_PROJET);
+        boolean isAdminOrChefDep = (role == NomRole.ADMINISTRATEUR || role == NomRole.CHEF_DE_DEPARTEMENT);
+
+        if ((isEmploye || isChefProjet) && ("add".equals(action) || "delete".equals(action))) {
+            response.sendRedirect("projet?action=list");
             return;
         }
 
-        if (user.getRole().getNomRole() == NomRole.EMPLOYE) {
-            // Les employés n’ont accès qu’à la liste
-            String action = request.getParameter("action");
-            if (action != null && (action.equals("add") || action.equals("edit") || action.equals("delete"))) {
-                response.sendRedirect("projet?action=list");
-                return;
-            }
-        }
-
-        String action = request.getParameter("action");
-        if (action == null) action = "list";
-
         switch (action) {
-            case "add":
+            case "add": {
+                if (!isAdminOrChefDep) { response.sendRedirect("projet?action=list"); return; }
                 request.setAttribute("employes", employeDAO.getAll());
                 request.getRequestDispatcher("jsp/projets-form.jsp").forward(request, response);
                 break;
-            case "edit":
+            }
+            case "edit": {
                 int idEdit = Integer.parseInt(request.getParameter("id"));
                 Projet projet = projetDAO.getById(idEdit);
+                if (projet == null) { response.sendRedirect("projet?action=list"); return; }
 
-                if (projet != null) {
-                    request.setAttribute("projet", projet);
-                    request.setAttribute("employes", employeDAO.getAll());
-                    request.getRequestDispatcher("jsp/projets-form.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect("projet?action=list");
+                if (isChefProjet) {
+                    int me = (int) user.getEmploye().getId();
+                    if (projet.getChefProjet() == null || projet.getChefProjet().getId() != me) {
+                        response.sendRedirect("projet?action=list");
+                        return;
+                    }
                 }
+                if (isEmploye) { response.sendRedirect("projet?action=list"); return; }
+
+                request.setAttribute("projet", projet);
+                request.setAttribute("employes", employeDAO.getAll());
+                request.getRequestDispatcher("jsp/projets-form.jsp").forward(request, response);
                 break;
-            case "delete":
+            }
+            case "delete": {
+                if (!isAdminOrChefDep) { response.sendRedirect("projet?action=list"); return; }
                 int idDel = Integer.parseInt(request.getParameter("id"));
                 projetDAO.delete(idDel);
                 response.sendRedirect("projet?action=list");
                 break;
-            default:
-                List<Projet> list = new ArrayList<>();
-                System.out.println("🔎 Rôle connecté : " + user.getRole().getNomRole());
-
-                // Si ce n'est pas un admin ou le chef de département, il ne voit que ses projets
-                if (user.getRole().getNomRole() == NomRole.EMPLOYE) {
-                    List <Projet> projets = projetDAO.getByEmploye((int) user.getEmploye().getId());
-                    if (projets != null) list.addAll(projets);
-                }
-
-                // Sinon → il voit tout
-                else if (user.getRole().getNomRole() == NomRole.ADMINISTRATEUR || user.getRole().getNomRole() == NomRole.CHEF_DE_DEPARTEMENT || user.getRole().getNomRole() == NomRole.CHEF_DE_PROJET) {
+            }
+            default: {
+                List<Projet> list;
+                if (isEmploye) {
+                    list = projetDAO.getByEmploye((int) user.getEmploye().getId());
+                } else if (isChefProjet) {
+                    list = projetDAO.getByChefProjet((int) user.getEmploye().getId());
+                } else if (isAdminOrChefDep) {
                     list = projetDAO.getAll();
-                }
-
-                else {
-                    System.out.println("Role non vérifié !!!!");
+                } else {
+                    list = Collections.emptyList();
                 }
 
                 request.setAttribute("projets", list);
                 request.getRequestDispatcher("jsp/projets.jsp").forward(request, response);
+            }
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
+        if (user == null) { response.sendRedirect("login.jsp"); return; }
+
+        NomRole role = user.getRole().getNomRole();
+        boolean isEmploye = (role == NomRole.EMPLOYE);
+        boolean isChefProjet = (role == NomRole.CHEF_DE_PROJET);
+        boolean isAdminOrChefDep = (role == NomRole.ADMINISTRATEUR || role == NomRole.CHEF_DE_DEPARTEMENT);
+
         String idStr = request.getParameter("id");
         String nom = request.getParameter("nom");
         String description = request.getParameter("description");
@@ -94,36 +108,52 @@ public class ProjetServlet extends HttpServlet {
         String budgetStr = request.getParameter("budget");
         String dateDebutStr = request.getParameter("dateDebut");
         String dateFinStr = request.getParameter("dateFin");
+        String chefIdStr = request.getParameter("chefId"); // <--- IMPORTANT (nom aligné au form)
         String[] employesIds = request.getParameterValues("employesAssignes");
 
         Projet projet;
 
         if (idStr != null && !idStr.isEmpty()) {
-            // --- UPDATE ---
+            // UPDATE
             int id = Integer.parseInt(idStr);
-            projet = projetDAO.getById(id); // chargé avec ses employés
+            projet = projetDAO.getById(id);
+            if (projet == null) { response.sendRedirect("projet?action=list"); return; }
+
+            if (isEmploye) { response.sendRedirect("projet?action=list"); return; }
+            if (isChefProjet) {
+                int me = (int) user.getEmploye().getId();
+                if (projet.getChefProjet() == null || projet.getChefProjet().getId() != me) {
+                    response.sendRedirect("projet?action=list");
+                    return;
+                }
+            }
         } else {
-            // --- CREATE ---
+            // CREATE
+            if (!isAdminOrChefDep) { response.sendRedirect("projet?action=list"); return; }
             projet = new Projet();
         }
 
-        // --- Remplir les infos du projet ---
+        // Hydratation de base
         projet.setNom(nom);
         projet.setDescription(description);
+        if (etatStr != null && !etatStr.isEmpty()) projet.setEtat(EtatProjet.valueOf(etatStr));
+        if (budgetStr != null && !budgetStr.isEmpty()) projet.setBudget(Double.parseDouble(budgetStr));
+        if (dateDebutStr != null && !dateDebutStr.isEmpty()) projet.setDateDebut(Date.valueOf(dateDebutStr));
+        if (dateFinStr != null && !dateFinStr.isEmpty()) projet.setDateFin(Date.valueOf(dateFinStr));
 
-        if (etatStr != null && !etatStr.isEmpty())
-            projet.setEtat(EtatProjet.valueOf(etatStr));
+        // Chef de projet
+        if (isAdminOrChefDep) {
+            if (chefIdStr != null && !chefIdStr.isEmpty()) {
+                Employe chef = employeDAO.getById(Integer.parseInt(chefIdStr));
+                projet.setChefProjet(chef); // DAO l'attachera
+            } else {
+                projet.setChefProjet(null);
+            }
+        } else if (isChefProjet) {
+            projet.setChefProjet(user.getEmploye()); // forcer à soi-même
+        }
 
-        if (budgetStr != null && !budgetStr.isEmpty())
-            projet.setBudget(Double.parseDouble(budgetStr));
-
-        if (dateDebutStr != null && !dateDebutStr.isEmpty())
-            projet.setDateDebut(Date.valueOf(dateDebutStr));
-
-        if (dateFinStr != null && !dateFinStr.isEmpty())
-            projet.setDateFin(Date.valueOf(dateFinStr));
-
-        // --- Associer les employés sélectionnés ---
+        // Employés affectés
         Set<Employe> employesAffectes = new HashSet<>();
         if (employesIds != null) {
             for (String empIdStr : employesIds) {
@@ -134,7 +164,7 @@ public class ProjetServlet extends HttpServlet {
         }
         projet.setEmployes(employesAffectes);
 
-        // --- Persister ---
+        // Persistance
         if (idStr != null && !idStr.isEmpty()) {
             projetDAO.update(projet);
         } else {
