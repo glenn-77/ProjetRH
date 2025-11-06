@@ -15,7 +15,8 @@
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/index.jsp">Accueil</a>
                 </li>
-                <c:if test="${not (role == 'EMPLOYE')}">
+                <!-- Employés visible UNIQUEMENT pour l'ADMIN -->
+                <c:if test="${role == 'ADMINISTRATEUR'}">
                     <li class="nav-item">
                         <a class="nav-link" href="${pageContext.request.contextPath}/employe?action=list">Employés</a>
                     </li>
