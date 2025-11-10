@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dao.*;
 import com.example.model.*;
 
+import com.example.utils.EmailUtil;
 import com.example.utils.PasswordUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -220,6 +221,20 @@ public class EmployeServlet extends HttpServlet {
             user.setEmploye(emp);
             user.setRole(roleDAO.getById(Integer.parseInt(roleid))); // récupère le rôle par défaut
             utilisateurDAO.save(user);
+
+            // --- Envoi du mail contenant les identifiants ---
+            String destinataire = emp.getEmail();
+            String sujet = "Vos identifiants de connexion au portail RH";
+            String contenu = "Bonjour " + emp.getPrenom() + " " + emp.getNom() + ",\n\n"
+                    + "Votre compte utilisateur a été créé avec succès.\n\n"
+                    + "Voici vos identifiants de connexion :\n"
+                    + "👤 Login : " + user.getLogin() + "\n"
+                    + "🔑 Mot de passe : " + randomPassword + "\n\n"
+                    + "Veuillez changer votre mot de passe après votre première connexion.\n\n"
+                    + "Cordialement,\n"
+                    + "L’équipe RH";
+
+            EmailUtil.envoyerMail(destinataire, sujet, contenu);
 
             // Affiche le mot de passe dans la console (ou l’envoie par mail)
             System.out.println("🔐 Nouveau compte créé pour " + e.getPrenom() + " " + e.getNom() +
