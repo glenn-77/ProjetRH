@@ -17,10 +17,12 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h5 class="card-title">${employe.prenom} ${employe.nom}</h5>
+            <p class="card-text"><strong>Pseudo :</strong> ${user.login}</p>
             <p class="card-text"><strong>Matricule :</strong> ${employe.matricule}</p>
             <p class="card-text"><strong>Département :</strong> ${employe.departement.nom}</p>
             <p class="card-text"><strong>Poste :</strong> ${employe.poste}</p>
             <p class="card-text"><strong>Grade :</strong> ${employe.grade}</p>
+            <p class="card-text"><strong>Rôle :</strong> ${user.role.nomRole.name()}</p>
 
             <h6>Projets :</h6>
             <ul>
