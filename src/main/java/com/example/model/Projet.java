@@ -53,6 +53,11 @@ public class Projet {
     @JoinColumn(name = "manager_id")
     private Employe chefProjet;
 
+    @ManyToOne
+    @JoinColumn(name = "departement_id")
+    private Departement departement;
+
+
     // ----- CONSTRUCTEURS -----
 
     public Projet() {
@@ -139,6 +144,14 @@ public class Projet {
 
     public void setChefProjet(Employe chefProjet) {
         this.chefProjet = chefProjet;
+    }
+
+    public Departement getDepartement() {
+        return departement;
+    }
+
+    public void setDepartement(Departement departement) {
+        this.departement = departement;
     }
 
     // ----- MÉTHODES UTILES -----

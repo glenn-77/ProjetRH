@@ -135,6 +135,20 @@ public class ProjetDAO {
         }
     }
 
+    public List<Projet> getByDepartement(int departementId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT DISTINCT p FROM Projet p " +
+                                    "LEFT JOIN FETCH p.employes " +
+                                    "LEFT JOIN FETCH p.chefProjet " +
+                                    "WHERE p.departement.id = :deptId",
+                            Projet.class
+                    ).setParameter("deptId", departementId)
+                    .list();
+        }
+    }
+
+
     public List<Projet> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(

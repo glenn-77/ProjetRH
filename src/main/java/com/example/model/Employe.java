@@ -57,6 +57,9 @@ public class Employe {
 
     @OneToMany(mappedBy = "employe", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<FicheDePaie> fichesPaie;
+
+    @Transient
+    private String roleNom;
     // ======= CONSTRUCTEURS =======
 
     public Employe() {
@@ -137,6 +140,14 @@ public class Employe {
 
     public void setFichesPaie(Set<FicheDePaie> fichesPaie) {
         this.fichesPaie = fichesPaie;
+    }
+
+    public String getRoleNom() {
+        return roleNom;
+    }
+
+    public void setRoleNom(String roleNom) {
+        this.roleNom = roleNom;
     }
 
     // ======= MÉTHODES UTILITAIRES =======

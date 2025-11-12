@@ -102,6 +102,14 @@ public class EmployeServlet extends HttpServlet {
 
             default: // --- AFFICHER LISTE DES EMPLOYÉS ---
                 List<Employe> list = employeDAO.getAll();
+                for (Employe e : list) {
+                    Utilisateur user = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (user != null && user.getRole() != null) {
+                        e.setRoleNom(user.getRole().getNomRole().name());
+                    } else {
+                        e.setRoleNom("Aucun rôle");
+                    }
+                }
                 request.setAttribute("employes", list);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("jsp/employes.jsp");
                 dispatcher.forward(request, response);
@@ -141,6 +149,16 @@ public class EmployeServlet extends HttpServlet {
 
             emp.setProjets(projetsAffectes);
             employeDAO.update(emp);
+            // --- Vérifie si l'employé est chef de projet ---
+            Utilisateur user = utilisateurDAO.getByEmployeId((int) emp.getId());
+            if (user != null && user.getRole() != null
+                    && user.getRole().getNomRole().equals(NomRole.CHEF_DE_PROJET)) {
+
+                for (Projet p : projetsAffectes) {
+                    p.setChefProjet(emp);
+                    projetDAO.update(p); // ou saveOrUpdate selon ta méthode
+                }
+            }
             response.sendRedirect("employe?action=list");
             return;
         }
@@ -219,7 +237,30 @@ public class EmployeServlet extends HttpServlet {
             user.setLogin(emp.getNom().charAt(0) + "." + emp.getPrenom()); // ou e.getMatricule() si tu préfères
             user.setMotDePasse(randomPassword);
             user.setEmploye(emp);
-            user.setRole(roleDAO.getById(Integer.parseInt(roleid))); // récupère le rôle par défaut
+            Role role = roleDAO.getById(Integer.parseInt(roleid));
+            user.setRole(role); // récupère le rôle par défaut
+            if (role.getNomRole().equals(NomRole.CHEF_DE_DEPARTEMENT) && deptId > 0) {
+                Departement dep = departementDAO.getById(deptId);
+
+                // 🔹 Récupère les employés déjà associés à ce département
+                Set<Employe> employesDepartement = dep.getEmployes() != null
+                        ? new HashSet<>(dep.getEmployes())
+                        : new HashSet<>();
+
+                // 🔹 Ajoute le nouveau chef s’il n’y est pas encore
+                employesDepartement.add(emp);
+
+                // 🔹 Définit le chef du département
+                dep.setChef(emp);
+
+                // 🔹 Conversion en tableau d’IDs pour update()
+                String[] employeIds = employesDepartement.stream()
+                        .map(ei -> String.valueOf(ei.getId()))
+                        .toArray(String[]::new);
+
+                // 🔹 Mise à jour en base
+                departementDAO.update(dep, employeIds);
+            }
             utilisateurDAO.save(user);
 
             // --- Envoi du mail contenant les identifiants ---

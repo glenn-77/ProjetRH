@@ -68,6 +68,16 @@ public class UtilisateurDAO {
         }
     }
 
+    public Utilisateur getByEmployeId(int employeId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "FROM Utilisateur u WHERE u.employe.id = :id", Utilisateur.class)
+                    .setParameter("id", employeId)
+                    .uniqueResult();
+        }
+    }
+
+
     public List<Utilisateur> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from Utilisateur", Utilisateur.class).list();

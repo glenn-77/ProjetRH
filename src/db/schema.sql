@@ -51,6 +51,14 @@ CREATE TABLE IF NOT EXISTS projet (
   ON DELETE SET NULL
 );
 
+ALTER TABLE projet
+    ADD COLUMN departement_id BIGINT,
+    ADD CONSTRAINT fk_projet_departement
+        FOREIGN KEY (departement_id)
+            REFERENCES departement(id)
+            ON DELETE SET NULL
+            ON UPDATE CASCADE;
+
 CREATE TABLE IF NOT EXISTS employe_projet (
   employe_id BIGINT,
   projet_id BIGINT,
@@ -113,7 +121,4 @@ VALUES ('Dupont', 'Jean', 'E001', 'Développeur', 'Junior', 2500,  1),
 INSERT INTO utilisateur (login, motDePasse, role_id, employe_id)
 VALUES ('admin', 'admin', 1, 1);
 
-SELECT u.id, u.role_id, e.nom
-FROM utilisateur u
-         JOIN employe e ON u.employe_id = e.id;
 

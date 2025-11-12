@@ -77,9 +77,13 @@ public class ProjetServlet extends HttpServlet {
                     list = projetDAO.getByEmploye((int) user.getEmploye().getId());
                 } else if (isChefProjet) {
                     list = projetDAO.getByChefProjet((int) user.getEmploye().getId());
-                } else if (isAdminOrChefDep) {
+                } else if (role == NomRole.CHEF_DE_DEPARTEMENT) {
+                    int deptId = Math.toIntExact(user.getEmploye().getDepartement().getId());
+                    list = projetDAO.getByDepartement(deptId);
+                } else if (role == NomRole.ADMINISTRATEUR) {
                     list = projetDAO.getAll();
-                } else {
+                }
+                else {
                     list = Collections.emptyList();
                 }
 

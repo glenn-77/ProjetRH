@@ -11,7 +11,6 @@
 <jsp:include page="navbar.jsp" />
 <div class="container mt-5">
     <h2 class="text-center mb-4">Gestion des départements</h2>
-    <p>Rôle connecté : ${sessionScope.user.role.nomRole.name()}</p>
 
     <!-- Bouton d'ajout -->
     <c:if test="${role == 'ADMINISTRATEUR'}">
@@ -80,7 +79,7 @@
                         <c:if test="${role == 'ADMINISTRATEUR'}">
                                 <a href="${pageContext.request.contextPath}/departement?action=delete&id=${d.id}"
                                 class="btn btn-danger btn-sm"
-                               onclick="return confirm('Supprimer ce département ?');">Supprimer</a>
+                                   onclick="return confirm('Supprimer ce département ?');">Supprimer</a>
                             </td>
                         </c:if>
                     </tr>

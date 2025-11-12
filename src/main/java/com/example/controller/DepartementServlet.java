@@ -58,7 +58,6 @@ public class DepartementServlet extends HttpServlet {
                 break;
             default:
                 List<Departement> list = new ArrayList<>();
-                System.out.println("🔎 Rôle connecté : " + user.getRole().getNomRole());
 
                 // Si ce n'est pas un admin, il ne voit que son département
                 if (user.getRole().getNomRole() == NomRole.EMPLOYE) {

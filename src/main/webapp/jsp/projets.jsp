@@ -14,25 +14,30 @@
 <jsp:include page="navbar.jsp" />
 
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Projets</h2>
+    <!-- Titre centré -->
+    <h2 class="text-center mb-4">Gestion des projets</h2>
+
+    <!-- Bouton Ajouter aligné à droite pour admin/chef dép -->
+    <div class="d-flex justify-content-end mb-3">
         <c:if test="${role == 'ADMINISTRATEUR' || role == 'CHEF_DE_DEPARTEMENT'}">
             <a href="${pageContext.request.contextPath}/projet?action=add" class="btn btn-success">+ Ajouter un projet</a>
         </c:if>
     </div>
 
-    <table class="table table-striped table-bordered shadow-sm">
-        <thead class="table-light">
+    <!-- Tableau harmonisé -->
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-dark text-center">
         <tr>
             <th>ID</th>
+            <th>Département</th>
             <th>Nom</th>
             <th>Description</th>
             <th>Date début</th>
             <th>Date fin</th>
-            <th>Avancement du projet</th>
+            <th>Avancement</th>
             <th>Budget (€)</th>
             <th>Chef de projet</th>
-            <th>Membres du projet</th>
+            <th>Membres</th>
             <c:if test="${role != 'EMPLOYE'}">
                 <th>Actions</th>
             </c:if>
@@ -42,6 +47,7 @@
         <c:forEach var="projet" items="${projets}">
             <tr>
                 <td>${projet.id}</td>
+                <td>${projet.departement.nom}</td>
                 <td>${projet.nom}</td>
                 <td>${projet.description}</td>
                 <td>${projet.dateDebut}</td>
@@ -59,32 +65,38 @@
                     </c:choose>
                 </td>
                 <td>
-                    <c:forEach var="e" items="${projet.employes}">
-                        <span class="badge bg-secondary">${e.nom} ${e.prenom}</span>
-                    </c:forEach>
-                    <c:if test="${empty projet.employes}">
-                        <span class="text-muted">Aucun</span>
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${not empty projet.employes}">
+                            <ul class="mb-0 ps-3">
+                                <c:forEach var="e" items="${projet.employes}">
+                                    <li>${e.prenom} ${e.nom} <small class="text-muted">(${e.poste})</small></li>
+                                </c:forEach>
+                            </ul>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="text-muted fst-italic">Aucun employé</span>
+                        </c:otherwise>
+                    </c:choose>
                 </td>
 
                 <c:if test="${role != 'EMPLOYE'}">
-                    <td>
+                    <td class="text-center">
                         <!-- Modifier -->
                         <c:if test="${role == 'ADMINISTRATEUR' || role == 'CHEF_DE_DEPARTEMENT'}">
                             <a href="${pageContext.request.contextPath}/projet?action=edit&id=${projet.id}"
-                               class="btn btn-sm btn-primary">Modifier</a>
+                               class="btn btn-sm btn-warning">Modifier</a>
                         </c:if>
 
                         <!-- Chef de projet : peut modifier seulement ses projets -->
                         <c:if test="${role == 'CHEF_DE_PROJET' && projet.chefProjet != null && meId == projet.chefProjet.id}">
                             <a href="${pageContext.request.contextPath}/projet?action=edit&id=${projet.id}"
-                               class="btn btn-sm btn-primary">Modifier</a>
+                               class="btn btn-sm btn-warning">Modifier</a>
                         </c:if>
 
                         <!-- Supprimer : uniquement admin / chef de département -->
                         <c:if test="${role == 'ADMINISTRATEUR' || role == 'CHEF_DE_DEPARTEMENT'}">
                             <a href="${pageContext.request.contextPath}/projet?action=delete&id=${projet.id}"
-                               class="btn btn-sm btn-outline-danger"
+                               class="btn btn-sm btn-danger ms-1"
                                onclick="return confirm('Voulez-vous vraiment supprimer ce projet ?');">Supprimer</a>
                         </c:if>
                     </td>
