@@ -26,6 +26,19 @@
             </div>
 
             <div class="mb-3">
+                <label for="depId" class="form-label">Département :</label>
+                <select id="depId" name="depId" class="form-select">
+                    <option value="">-- Sélectionner un département --</option>
+                    <c:forEach var="dep" items="${departements}">
+                        <option value="${dep.id}"
+                            ${projet != null && projet.departement != null && projet.departement.id == dep.id ? "selected" : ""}>
+                                ${dep.nom}
+                        </option>
+                    </c:forEach>
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label">Description</label>
                 <textarea name="description" class="form-control" rows="4" required>${projet.description}</textarea>
             </div>

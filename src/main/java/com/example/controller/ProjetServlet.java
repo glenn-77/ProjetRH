@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dao.DepartementDAO;
 import com.example.dao.EmployeDAO;
 import com.example.dao.ProjetDAO;
 import com.example.model.*;
@@ -18,6 +19,7 @@ import java.util.*;
 public class ProjetServlet extends HttpServlet {
     private final ProjetDAO projetDAO = new ProjetDAO();
     private final EmployeDAO employeDAO = new EmployeDAO();
+    private final DepartementDAO departementDAO = new DepartementDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,6 +44,7 @@ public class ProjetServlet extends HttpServlet {
             case "add": {
                 if (!isAdminOrChefDep) { response.sendRedirect("projet?action=list"); return; }
                 request.setAttribute("employes", employeDAO.getAll());
+                request.setAttribute("departements", departementDAO.getAll());
                 request.getRequestDispatcher("jsp/projets-form.jsp").forward(request, response);
                 break;
             }
@@ -61,6 +64,7 @@ public class ProjetServlet extends HttpServlet {
 
                 request.setAttribute("projet", projet);
                 request.setAttribute("employes", employeDAO.getAll());
+                request.setAttribute("departements", departementDAO.getAll());
                 request.getRequestDispatcher("jsp/projets-form.jsp").forward(request, response);
                 break;
             }
@@ -107,6 +111,7 @@ public class ProjetServlet extends HttpServlet {
 
         String idStr = request.getParameter("id");
         String nom = request.getParameter("nom");
+        String depStr = request.getParameter("depId");
         String description = request.getParameter("description");
         String etatStr = request.getParameter("etat");
         String budgetStr = request.getParameter("budget");
@@ -139,6 +144,7 @@ public class ProjetServlet extends HttpServlet {
 
         // Hydratation de base
         projet.setNom(nom);
+        if (depStr != null && !depStr.isEmpty()) projet.setDepartement(departementDAO.getById(Integer.parseInt(depStr)));
         projet.setDescription(description);
         if (etatStr != null && !etatStr.isEmpty()) projet.setEtat(EtatProjet.valueOf(etatStr));
         if (budgetStr != null && !budgetStr.isEmpty()) projet.setBudget(Double.parseDouble(budgetStr));

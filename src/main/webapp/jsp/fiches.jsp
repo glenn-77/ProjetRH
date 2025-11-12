@@ -26,7 +26,8 @@
     </div>
 
     <!-- Filtres -->
-    <form action="fiche" method="get" class="row g-3 align-items-end mb-3">
+    <c:if test="${role == 'ADMINISTRATEUR'}">
+    <form action="fiche" method="get" class="d-flex gap-2 align-items-end mb-3">
         <input type="hidden" name="action" value="search">
 
         <div class="col-md-4">
@@ -49,10 +50,11 @@
             <input type="date" name="dateFin" id="dateFin" value="${param.dateFin}" class="form-control">
         </div>
 
-        <div class="col-md-2 d-grid">
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-        </div>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a href="${pageContext.request.contextPath}/fiche?action=list" class="btn btn-outline-secondary">Réinitialiser</a>
+
     </form>
+    </c:if>
 
     <!-- Tableau harmonisé -->
     <table class="table table-bordered table-hover align-middle shadow-sm">
