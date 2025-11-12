@@ -24,7 +24,7 @@
             <p class="card-text"><strong>Grade :</strong> ${employe.grade}</p>
             <p class="card-text"><strong>Rôle :</strong> ${user.role.nomRole.name()}</p>
 
-            <h6>Projets :</h6>
+            <h6>Projets Assignés:</h6>
             <ul>
                 <c:forEach var="p" items="${employe.projets}">
                     <li>${p.nom}</li>

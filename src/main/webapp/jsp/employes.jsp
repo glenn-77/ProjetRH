@@ -59,7 +59,7 @@
                 <a href="employe?action=affecter&id=<%=e.getId()%>"
                    class="btn btn-sm btn-outline-success">Affecter</a>
                 <a href="employe?action=edit&id=<%=e.getId()%>" class="btn btn-sm btn-outline-primary">Modifier</a>
-                <a href="employe?action=delete&id=<%=e.getId()%>" class="btn btn-sm btn-outline-danger ms-1">Supprimer</a>
+                <a href="employe?action=delete&id=<%=e.getId()%>" onclick="return confirm('Supprimer cet employé ?') class="btn btn-sm btn-outline-danger ms-1">Supprimer</a>
             </td>
         </tr>
         <% } %>

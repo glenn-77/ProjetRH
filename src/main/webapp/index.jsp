@@ -64,7 +64,7 @@
 <!-- CONTENU -->
 <main class="container">
     <div class="welcome">
-        <h1 class="fw-bold mb-3">Bienvenue dans le système de gestion RH</h1>
+        <h1 class="fw-bold mb-3">Bienvenue ${user.employe.prenom} ${user.employe.nom}!</h1>
         <p class="lead">Gérez facilement vos employés, départements, projets et fiches de paie.</p>
     </div>
 </main>
