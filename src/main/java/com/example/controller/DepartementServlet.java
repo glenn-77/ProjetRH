@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dao.DepartementDAO;
 import com.example.dao.EmployeDAO;
+import com.example.dao.UtilisateurDAO;
 import com.example.model.*;
 
 import jakarta.servlet.*;
@@ -17,6 +18,7 @@ import java.util.Set;
 public class DepartementServlet extends HttpServlet {
     private final DepartementDAO departementDAO = new DepartementDAO();
     private final EmployeDAO employeDAO = new EmployeDAO();
+    private final UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
@@ -38,17 +40,36 @@ public class DepartementServlet extends HttpServlet {
 
         if (action == null) action = "list";
 
+        List<Employe> employes = employeDAO.getAll();
+        List<Employe> chefs = new ArrayList<>();
         switch (action) {
             case "add":
-                request.setAttribute("employes", new EmployeDAO().getAll());
+                for (Employe e : employes) {
+                    Utilisateur u = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (u != null && u.getRole() != null &&
+                            u.getRole().getNomRole() == NomRole.CHEF_DE_DEPARTEMENT) {
+
+                        chefs.add(e);
+                    }
+                }
+                request.setAttribute("employes", employes);
+                request.setAttribute("chefs", chefs);
                 request.getRequestDispatcher("jsp/departements-form.jsp").forward(request, response);
                 break;
             case "edit":
                 int idEdit = Integer.parseInt(request.getParameter("id"));
                 Departement departement = departementDAO.getById(idEdit);
-                List<Employe> employes = employeDAO.getAll();
+                for (Employe e : employes) {
+                    Utilisateur u = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (u != null && u.getRole() != null &&
+                            u.getRole().getNomRole() == NomRole.CHEF_DE_DEPARTEMENT) {
+
+                        chefs.add(e);
+                    }
+                }
                 request.setAttribute("departement", departement);
                 request.setAttribute("employes", employes);
+                request.setAttribute("chefs", chefs);
                 request.getRequestDispatcher("jsp/departements-form.jsp").forward(request, response);
                 break;
             case "delete":

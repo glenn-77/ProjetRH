@@ -1,15 +1,18 @@
 package com.example.controller;
 
 import com.example.dao.*;
+import com.example.dto.EmployeDTO;
 import com.example.model.*;
 
 import com.example.utils.EmailUtil;
 import com.example.utils.PasswordUtil;
+import com.google.gson.Gson;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,9 +56,54 @@ public class EmployeServlet extends HttpServlet {
                     response.sendRedirect("employe?action=list");
                 }
                 break;
+            case "listByDepartement":
+                int depId = Integer.parseInt(request.getParameter("id"));
+                List<Employe> employesDep = employeDAO.getByDepartement(depId);
+                List<EmployeDTO> dtos = employesDep.stream()
+                        .map(e -> new EmployeDTO((int)e.getId(), e.getNom(), e.getPrenom(), e.getPoste()))
+                        .toList();
+                request.setAttribute("employes", dtos);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+
+                String json = new Gson().toJson(dtos);
+                response.getWriter().write(json);
+                break;
+
+            case "listChefsByDepartement":
+                int depId2 = Integer.parseInt(request.getParameter("id"));
+                List<Employe> employes = employeDAO.getByDepartement(depId2);
+
+                List<EmployeDTO> chefs = new ArrayList<>();
+
+                for (Employe e : employes) {
+                    Utilisateur u = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (u != null && u.getRole() != null &&
+                            u.getRole().getNomRole() == NomRole.CHEF_DE_PROJET) {
+
+                        chefs.add(new EmployeDTO(
+                                (int) e.getId(),
+                                e.getNom(),
+                                e.getPrenom(),
+                                e.getPoste()
+                        ));
+                    }
+                }
+
+                response.setContentType("application/json");
+                response.getWriter().write(new Gson().toJson(chefs));
+                break;
 
             case "listByGrade":
                 List<Employe> byGrade = employeDAO.getAllOrderByGrade();
+                for (Employe e : byGrade) {
+                    Utilisateur user = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (user != null && user.getRole() != null) {
+                        e.setRoleNom(user.getRole().getNomRole().name());
+                    } else {
+                        e.setRoleNom("Aucun rôle");
+                    }
+                }
                 request.setAttribute("employes", byGrade);
                 RequestDispatcher gradeDispatcher = request.getRequestDispatcher("jsp/employes.jsp");
                 gradeDispatcher.forward(request, response);
@@ -63,6 +111,14 @@ public class EmployeServlet extends HttpServlet {
 
             case "listByPoste":
                 List<Employe> byPoste = employeDAO.getAllOrderByPoste();
+                for (Employe e : byPoste) {
+                    Utilisateur user = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (user != null && user.getRole() != null) {
+                        e.setRoleNom(user.getRole().getNomRole().name());
+                    } else {
+                        e.setRoleNom("Aucun rôle");
+                    }
+                }
                 request.setAttribute("employes", byPoste);
                 RequestDispatcher posteDispatcher = request.getRequestDispatcher("jsp/employes.jsp");
                 posteDispatcher.forward(request, response);
@@ -95,6 +151,14 @@ public class EmployeServlet extends HttpServlet {
             case "search":
                 String keyword = request.getParameter("keyword");
                 List<Employe> results = employeDAO.search(keyword);
+                for (Employe e : results) {
+                    Utilisateur user = utilisateurDAO.getByEmployeId((int) e.getId());
+                    if (user != null && user.getRole() != null) {
+                        e.setRoleNom(user.getRole().getNomRole().name());
+                    } else {
+                        e.setRoleNom("Aucun rôle");
+                    }
+                }
                 request.setAttribute("employes", results);
                 request.setAttribute("keyword", keyword); // pour réafficher dans le champ
                 request.getRequestDispatcher("jsp/employes.jsp").forward(request, response);

@@ -20,6 +20,7 @@
                 <input type="hidden" name="id" value="${departement.id}">
             </c:if>
 
+            <c:if test="${role == 'ADMINISTRATEUR'}">
             <div class="mb-3">
                 <label class="form-label">Nom :</label>
                 <input type="text" name="nom" class="form-control"
@@ -30,7 +31,7 @@
                 <label class="form-label">Chef de département :</label>
                 <select name="chefId" class="form-select">
                     <option value="">-- Sélectionner un chef de département --</option>
-                    <c:forEach var="emp" items="${employes}">
+                    <c:forEach var="emp" items="${chefs}">
                         <option value="${emp.id}"
                             ${departement != null && departement.chef != null && departement.chef.id == emp.id ? "selected" : ""}>
                                 ${emp.nom} ${emp.prenom} (${emp.poste})
@@ -38,6 +39,20 @@
                     </c:forEach>
                 </select>
             </div>
+            </c:if>
+
+
+            <c:if test="${not (role == 'ADMINISTRATEUR')}">
+                <div class="mb-3">
+                    <label class="form-label">Nom: </label>
+                    <p class="form-control">${departement.nom}</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Chef de département: </label>
+                    <p class="form-control">${departement.chef.nom} ${departement.chef.prenom} (${departement.chef.poste})</p>
+                </div>
+            </c:if>
 
             <!-- Liste des employés du département -->
             <div class="mb-3">
