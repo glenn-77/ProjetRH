@@ -121,4 +121,7 @@ VALUES ('Dupont', 'Jean', 'E001', 'Développeur', 'Junior', 2500,  1),
 INSERT INTO utilisateur (login, motDePasse, role_id, employe_id)
 VALUES ('admin', 'admin', 1, 1);
 
+INSERT INTO utilisateur (login, motDePasse, role_id, employe_id)
+VALUES ('employe', 'employe', 4, 2);
+
 

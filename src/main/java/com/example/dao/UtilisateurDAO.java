@@ -28,7 +28,7 @@ public class UtilisateurDAO {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
-            session.update(u);
+            session.merge(u);
             tx.commit();
         } catch (Exception ex) {
             if (tx != null && tx.isActive()) tx.rollback();

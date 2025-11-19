@@ -50,6 +50,9 @@ public class EmployeServlet extends HttpServlet {
                     Employe emp = employeDAO.getById(idEdit);
                     request.setAttribute("employe", emp);
                     request.setAttribute("departements", departementDAO.getAll());
+                    Utilisateur user = utilisateurDAO.getByEmployeId((int) emp.getId());
+                    request.setAttribute("user", user);
+                    request.setAttribute("roles", roleDAO.getAll());
                     RequestDispatcher editDispatcher = request.getRequestDispatcher("jsp/employes-form.jsp");
                     editDispatcher.forward(request, response);
                 } catch (NumberFormatException e) {
@@ -268,6 +271,7 @@ public class EmployeServlet extends HttpServlet {
         if (idStr != null && !idStr.trim().isEmpty()) {
             int id = Integer.parseInt(idStr);
             Employe existing = employeDAO.getById(id);
+
             if (existing != null) {
                 existing.setNom(nom);
                 existing.setPrenom(prenom);
@@ -275,9 +279,11 @@ public class EmployeServlet extends HttpServlet {
                 existing.setAdresse(adresse);
                 existing.setTelephone(telephone);
                 existing.setPoste(poste);
+
                 if (grade != null && !grade.isEmpty()) {
                     existing.setGrade(Grade.valueOf(grade));
                 }
+
                 existing.setSalaireBase(salaireBase);
 
                 if (deptId > 0) {
@@ -287,8 +293,20 @@ public class EmployeServlet extends HttpServlet {
                 }
 
                 employeDAO.update(existing);
+
+
+                String roleIdStr = request.getParameter("roleId");
+                if (roleIdStr != null && !roleIdStr.isEmpty()) {
+                    Utilisateur user = utilisateurDAO.getByEmployeId(id);
+                    if (user != null) {
+                        Role newRole = roleDAO.getById(Integer.parseInt(roleIdStr));
+                        user.setRole(newRole);
+                        utilisateurDAO.update(user);
+                    }
+                }
             }
-        } else {
+        }
+        else {
             e.setMatricule(generateMatricule());
             e.setDateEmbauche(LocalDate.now());
             employeDAO.save(e);

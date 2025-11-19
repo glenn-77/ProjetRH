@@ -80,7 +80,11 @@
                 <select name="roleId" class="form-select" required>
                     <option value="">-- Choisir un rôle --</option>
                     <c:forEach var="r" items="${roles}">
-                        <option value="${r.id}" ${employe != null && user.r.id == r.id ? 'selected' : ''}>${r.nomRole.name()}</option>
+                        <option value="${r.id}"
+                            ${user != null && user.role != null && user.role.id == r.id ? 'selected' : ''}>
+                                ${r.nomRole.name()}
+                        </option>
+
                     </c:forEach>
                 </select>
             </div>

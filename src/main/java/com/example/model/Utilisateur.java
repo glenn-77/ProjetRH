@@ -15,7 +15,7 @@ public class Utilisateur {
     @Column(nullable = false)
     private String motDePasse;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
