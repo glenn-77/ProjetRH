@@ -19,14 +19,15 @@ public class Utilisateur {
     @Column(nullable = false, unique = true)
     private String login;
 
-    @Column(nullable = false)
+    // 🔥 ICI LE POINT IMPORTANT
+    @Column(name = "motDePasse", nullable = false)
     private String motDePasse;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "employe_id")
     private Employe employe;
 
