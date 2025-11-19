@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Projets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        nav.navbar {
+            padding: 0.8rem 1rem;
+        }
+        .nav-link {
+            color: white !important;
+            margin-left: 1rem;
+            transition: color 0.2s, background-color 0.2s;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+        .nav-link:hover {
+            background-color: white !important;
+            color: #0d6efd !important;
+        }
+        .btn-logout {
+            background-color: #dc3545;
+            border: none;
+            padding: 0.45rem 0.9rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            margin-left: 1rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-logout:hover {
+            background-color: white;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        footer {
+            background-color: #0d6efd;
+            color: #fff;
+            text-align: center;
+            padding: 0.8rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .welcome {
+            text-align: center;
+            margin-top: 7rem;
+        }
+    </style>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <!-- Bouton Accueil -->
+            <a class="navbar-brand fw-bold" th:href="@{/index}">Système RH</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/index}">Accueil</a>
+                    </li>
+
+                    <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/employes}">Employés</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/departements}">Départements</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/projets}">Projets</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/fiches}">Fiches de paie</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profil}">Mon Profil</a>
+                    </li>
+
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-logout btn-sm" th:href="@{/logout}">Déconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">Gestion des projets</h2>
+
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-success">+ Ajouter un projet</button>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-dark text-center">
+        <tr>
+            <th>ID</th>
+            <th>Département</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Avancement</th>
+            <th>Budget (€)</th>
+            <th>Chef de projet</th>
+            <th>Membres</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody id="projetTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+    // ------------ Variables simulées ----------------
+    const projets = [
+        {
+            id: 1,
+            departement: { nom: "Informatique" },
+            nom: "Refonte SI",
+            description: "Modernisation",
+            dateDebut: "2025-01-10",
+            dateFin: "2025-06-15",
+            etat: "EN_COURS",
+            budget: 12000,
+            chefProjet: { nom: "Dupont", prenom: "Paul" },
+            employes: [
+                { prenom: "Alice", nom: "Martin", poste: "Dev" },
+                { prenom: "John", nom: "Doe", poste: "Analyste" }
+            ]
+        }
+    ];
+
+    // ------------ Rendu tableau ---------------------
+    document.getElementById("projetTable").innerHTML =
+        projets.map(p => `
+<tr>
+    <td>${p.id}</td>
+    <td>${p.departement.nom}</td>
+    <td>${p.nom}</td>
+    <td>${p.description}</td>
+    <td>${p.dateDebut}</td>
+    <td>${p.dateFin}</td>
+    <td>${p.etat}</td>
+    <td>${p.budget}</td>
+    <td>${p.chefProjet ? `${p.chefProjet.nom} ${p.chefProjet.prenom}` : "Non défini"}</td>
+    <td>
+        <ul class="mb-0">
+            ${p.employes.map(e => `<li>${e.prenom} ${e.nom} <small>(${e.poste})</small></li>`).join("")}
+        </ul>
+    </td>
+    <td class="text-center">
+        <button class="btn btn-warning btn-sm">Modifier</button>
+    </td>
+</tr>
+`).join("");
+
+</script>
+
+</body>
+</html>
