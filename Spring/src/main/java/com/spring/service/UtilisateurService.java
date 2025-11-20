@@ -12,8 +12,8 @@ public class UtilisateurService {
     private final UtilisateurRepository utilisateurRepository;
     private final RoleRepository roleRepository;
 
-    public Utilisateur login(String login, String password) {
-        return utilisateurRepository.findByLoginAndMotDePasse(login, password);
+    public Utilisateur login(String login, String motDePasse) {
+        return utilisateurRepository.login(login, motDePasse);
     }
 
     public Utilisateur createUser(String login, String password, NomRole role) {

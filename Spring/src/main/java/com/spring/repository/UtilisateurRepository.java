@@ -3,7 +3,11 @@ package com.spring.repository;
 import com.spring.model.Utilisateur;
 import com.spring.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
@@ -14,6 +18,14 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
     Utilisateur findByEmploye_Id(Long employeId);
 
-    java.util.List<Utilisateur> findByRole(Role role);
-}
+    List<Utilisateur> findByRole(Role role);
 
+    @Query("""
+       SELECT u FROM Utilisateur u
+       LEFT JOIN FETCH u.employe
+       LEFT JOIN FETCH u.role
+       WHERE u.login = :login AND u.motDePasse = :motDePasse
+       """)
+    Utilisateur login(@Param("login") String login,
+                      @Param("motDePasse") String motDePasse);
+}

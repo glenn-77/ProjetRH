@@ -33,6 +33,7 @@ public class FicheDePaie {
     @JoinColumn(name = "employe_id")
     private Employe employe;
 
+    @Column(name = "date_generation")
     private LocalDate dateGeneration;
 
     @PrePersist

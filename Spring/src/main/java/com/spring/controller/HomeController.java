@@ -13,6 +13,8 @@ public class HomeController {
     public String index(HttpSession session, Model model) {
         Utilisateur user = (Utilisateur) session.getAttribute("user");
         model.addAttribute("user", user);
+        System.out.println("USER = " + user);
+        if (user != null) System.out.println("EMPLOYE = " + user.getEmploye());
         return "index"; // index.html (Thymeleaf)
     }
 }
