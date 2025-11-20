@@ -74,8 +74,7 @@
                 </li>
 
                 <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item"
-                    th:if="${user != null and user.role != null and user.role.nomRole != 'EMPLOYE'}">
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 

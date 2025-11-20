@@ -107,19 +107,20 @@
     <!-- Filtres -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex gap-2">
-            <a href="/employe?action=list" class="btn btn-secondary btn-sm">Tous</a>
-            <a href="/employe?action=listByGrade" class="btn btn-primary btn-sm">Par grade</a>
-            <a href="/employe?action=listByPoste" class="btn btn-success btn-sm">Par poste</a>
+            <a th:href="@{/employes}" class="btn btn-secondary btn-sm">Tous</a>
+            <a th:href="@{/employes/sort/grade}" class="btn btn-primary btn-sm">Par grade</a>
+            <a th:href="@{/employes/sort/poste}" class="btn btn-success btn-sm">Par poste</a>
         </div>
-        <a href="/employe?action=add" class="btn btn-success">+ Ajouter un employé</a>
+        <a th:href="@{/employes/new}" class="btn btn-success">+ Ajouter un employé</a>
     </div>
 
     <!-- Recherche -->
-    <form class="d-flex gap-2 align-items-end mb-3">
-        <input class="form-control" type="search" name="keyword" placeholder="Rechercher..." id="keyword">
+    <form class="d-flex gap-2 align-items-end mb-3" method="get" th:action="@{/employes}">
+        <input class="form-control" type="search" name="q" placeholder="Rechercher..." id="keyword" th:value="${query}">
         <button class="btn btn-primary" type="submit">Rechercher</button>
-        <a href="/employe?action=list" class="btn btn-outline-secondary">Réinitialiser</a>
+        <a th:href="@{/employes}" class="btn btn-outline-secondary">Réinitialiser</a>
     </form>
+
 
     <table class="table table-bordered table-hover align-middle shadow-sm">
         <thead class="table-dark text-center">

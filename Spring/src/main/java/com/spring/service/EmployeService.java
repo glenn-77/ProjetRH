@@ -6,6 +6,7 @@ import com.spring.utils.EmailService;
 import com.spring.utils.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,6 +99,21 @@ public class EmployeService {
         }
 
         employeRepository.save(emp);
+    }
+
+    @Transactional(readOnly = true)
+    public Employe getEmployeWithDetails(Long id) {
+        Employe e = employeRepository.findById(id).orElse(null);
+        if (e != null) {
+            // ⚡ Forcer le chargement des associations lazy
+            if (e.getDepartement() != null) {
+                e.getDepartement().getNom(); // déclenche le chargement
+            }
+            if (e.getProjets() != null) {
+                e.getProjets().size(); // déclenche le chargement
+            }
+        }
+        return e;
     }
 
     // ----------- UTILISATEUR -----------

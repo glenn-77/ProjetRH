@@ -73,8 +73,7 @@
                 </li>
 
                 <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item"
-                    th:if="${user != null and user.role != null and user.role.nomRole != 'EMPLOYE'}">
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -145,9 +144,15 @@
             </div>
 
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary px-4" id="submit-btn">Créer</button>
-                <a href="/employe?action=list" class="btn btn-secondary ms-2">Annuler</a>
+                <!-- Libellé dynamique : Créer ou Mettre à jour -->
+                <button type="submit" class="btn btn-primary px-4" id="submit-btn"
+                        th:text="${employe.id == null ? 'Créer' : 'Mettre à jour'}">
+                </button>
+
+                <!-- Annuler renvoie vers la liste des employés -->
+                <a th:href="@{/employes}" class="btn btn-secondary ms-2">Annuler</a>
             </div>
+
         </form>
 
     </div>

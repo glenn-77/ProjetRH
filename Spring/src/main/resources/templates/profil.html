@@ -108,18 +108,17 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <h5 class="card-title">{{ prenom }} {{ nom }}</h5>
-            <p><strong>Pseudo :</strong> {{ login }}</p>
-            <p><strong>Matricule :</strong> {{ matricule }}</p>
-            <p><strong>Département :</strong> {{ departement }}</p>
-            <p><strong>Poste :</strong> {{ poste }}</p>
-            <p><strong>Grade :</strong> {{ grade }}</p>
-            <p><strong>Rôle :</strong> {{ role }}</p>
+            <h5 class="card-title" th:text="${employe.prenom} + ' ' + ${employe.nom}"></h5>
+            <p><strong>Pseudo :</strong> <span th:text="${user.login}"></span></p>
+            <p><strong>Matricule :</strong> <span th:text="${employe.matricule}"></span></p>
+            <p><strong>Département :</strong> <span th:text="${employe.departement?.nom}"></span></p>
+            <p><strong>Poste :</strong> <span th:text="${employe.poste}"></span></p>
+            <p><strong>Grade :</strong> <span th:text="${employe.grade}"></span></p>
+            <p><strong>Rôle :</strong> <span th:text="${user.role.nomRole}"></span></p>
 
             <h6>Projets assignés :</h6>
             <ul>
-                <!-- répéter -->
-                <li>{{ projet }}</li>
+                <li th:each="p : ${employe.projets}" th:text="${p.nom}"></li>
             </ul>
         </div>
     </div>
@@ -127,13 +126,14 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h5>Modifier mot de passe</h5>
-            <form class="d-flex gap-2">
-                <input type="password" class="form-control" placeholder="Nouveau mot de passe">
+            <form class="d-flex gap-2" th:action="@{/profil/updatePassword}" method="post">
+                <input type="password" class="form-control" name="newPassword" placeholder="Nouveau mot de passe">
                 <button class="btn btn-primary">Mettre à jour</button>
             </form>
-            <p class="mt-2 text-success">{{ message }}</p>
+            <p class="mt-2 text-success" th:text="${message}"></p>
         </div>
     </div>
+
 
     <a href="employes.html" class="btn btn-secondary">← Retour</a>
 </div>

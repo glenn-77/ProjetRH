@@ -19,10 +19,12 @@ public class ProfilController {
         Utilisateur user = (Utilisateur) session.getAttribute("user");
         if (user == null) return "redirect:/login";
 
-        Employe employe = user.getEmploye();
+        Employe employe = employeService.getEmployeWithDetails(user.getEmploye().getId());
+
         model.addAttribute("user", user);
         model.addAttribute("employe", employe);
 
-        return "profil"; // profil.jsp
+        return "profil";
     }
+
 }
