@@ -73,9 +73,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item"
-                    th:if="${user != null and user.role != null and user.role.nomRole != 'EMPLOYE'}">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -106,54 +104,120 @@
 <div class="container mt-5">
     <div class="card shadow-sm p-4 mx-auto" style="max-width:600px;">
 
-        <h2 class="text-center mb-4">{{ titreFormulaire }}</h2>
+        <!-- Titre dynamique : création / édition -->
+        <h2 class="text-center mb-4"
+            th:text="${fiche.id == null ? 'Créer une fiche de paie' : 'Modifier une fiche de paie'}">
+        </h2>
 
-        <form>
+        <!-- Formulaire lié au controller /fiches/save -->
+        <form th:action="@{/fiches/save}" method="post">
+
+            <!-- ID caché pour l'édition -->
+            <input type="hidden" name="id" th:value="${fiche.id}"/>
+
             <!-- EMPLOYÉ -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Employé :</label>
-                <select class="form-select" required>
-                    <option>-- Choisir --</option>
-                    <!-- Répéter une option par employé -->
-                    <!-- <option>Nom Prénom</option> -->
+                <select class="form-select" name="employeId" id="employe-select" required>
+                    <option value="">-- Choisir --</option>
+
+                    <option th:each="e : ${employes}"
+                            th:value="${e.id}"
+                            th:selected="${fiche.employe != null and fiche.employe.id == e.id}"
+                            th:text="${e.nom + ' ' + e.prenom}">
+                    </option>
                 </select>
             </div>
 
             <div class="row">
+                <!-- MOIS -->
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Mois :</label>
-                    <input type="number" class="form-control" min="1" max="12" value="{{ mois }}">
+                    <input type="number"
+                           class="form-control"
+                           name="mois"
+                           min="1" max="12"
+                           th:value="${fiche.mois != null ? fiche.mois : ''}"
+                           required>
                 </div>
 
+                <!-- ANNÉE -->
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Année :</label>
-                    <input type="number" class="form-control" value="{{ annee }}">
+                    <input type="number"
+                           class="form-control"
+                           name="annee"
+                           th:value="${fiche.annee != null ? fiche.annee : ''}"
+                           required>
                 </div>
             </div>
 
+            <!-- SALAIRE DE BASE -->
             <div class="mb-3">
-                <label class="form-label fw-semibold">Salaire de base (€)</label>
-                <input type="number" step="0.01" class="form-control" value="{{ salaireBase }}">
+                <label for="employe-select">Salaire Brut (€)</label>
+                <input type="number"
+                       step="0.01"
+                       class="form-control"
+                       id="salaireBase"
+                       name="salaireBase"
+                       th:value="${fiche.salaireBase != null ? fiche.salaireBase : ''}"
+                       required>
             </div>
-
+            <!-- PRIMES -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Primes (€)</label>
-                <input type="number" step="0.01" class="form-control" value="{{ prime }}">
+                <input type="number"
+                       step="0.01"
+                       class="form-control"
+                       name="prime"
+                       th:value="${fiche.prime != null ? fiche.prime : 0}">
             </div>
 
+            <!-- DÉDUCTIONS -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Déductions (€)</label>
-                <input type="number" step="0.01" class="form-control" value="{{ deduction }}">
+                <input type="number"
+                       step="0.01"
+                       class="form-control"
+                       name="deduction"
+                       th:value="${fiche.deduction != null ? fiche.deduction : 0}">
             </div>
 
             <div class="text-center">
-                <button class="btn btn-primary px-4">{{ actionBouton }}</button>
-                <a href="fiches.html" class="btn btn-secondary ms-2">Annuler</a>
+                <button class="btn btn-primary px-4"
+                        th:text="${fiche.id == null ? 'Créer' : 'Mettre à jour'}">
+                </button>
+
+                <a th:href="@{/fiches}" class="btn btn-secondary ms-2">Annuler</a>
             </div>
         </form>
 
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const employeSelect = document.getElementById("employe-select");
+        const salaireInput = document.getElementById("salaireBase");
+
+        employeSelect.addEventListener("change", () => {
+            const id = employeSelect.value;
+
+            if (!id) {
+                salaireInput.value = "";
+                return;
+            }
+
+            fetch(`/employes/${id}/salaire`)
+                .then(res => res.json())
+                .then(salaire => {
+                    if (salaire !== null) {
+                        salaireInput.value = salaire;
+                    }
+                })
+                .catch(err => console.error("Erreur récupération salaire", err));
+        });
+    });
+</script>
 
 </body>
 </html>

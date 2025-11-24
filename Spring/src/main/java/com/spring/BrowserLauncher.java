@@ -12,7 +12,7 @@ public class BrowserLauncher {
 
     @EventListener(ApplicationReadyEvent.class)
     public void openBrowserWhenReady() {
-        String url = "http://localhost:8080/";
+        String url = "http://localhost:8085/";
 
         try {
             if (!Desktop.isDesktopSupported()) {

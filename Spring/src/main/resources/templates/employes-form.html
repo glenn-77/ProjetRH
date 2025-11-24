@@ -72,8 +72,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -104,52 +103,92 @@
 <div class="container mt-5">
     <div class="card shadow-sm p-4 mx-auto" style="max-width:700px;">
 
-        <h2 class="text-center mb-4" id="form-title">Créer un Employé</h2>
+        <h2 class="text-center mb-4"
+            th:text="${employe.id == null ? 'Créer un Employé' : 'Modifier un Employé'}"></h2>
 
-        <form action="/employe" method="post">
-            <input type="hidden" name="id" id="emp-id">
+        <form th:action="@{/employes/save}" th:object="${employe}" method="post">
+
+            <input type="hidden" th:field="*{id}">
 
             <div class="row g-3">
 
                 <div class="col-md-6">
                     <label class="form-label">Nom :</label>
-                    <input type="text" name="nom" class="form-control" id="emp-nom">
+                    <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{nom}" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Prénom :</label>
-                    <input type="text" name="prenom" class="form-control" id="emp-prenom">
+                    <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{prenom}" required>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Matricule :</label>
-                    <input type="text" name="matricule" class="form-control" id="emp-matricule">
+                    <label class="form-label">Email :</label>
+                    <input type="email" class="form-control" th:field="*{email}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Adresse :</label>
+                    <input type="text" class="form-control" th:field="*{adresse}">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Téléphone :</label>
+                    <input type="text" pattern="[0-9]+" class="form-control" th:field="*{telephone}">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Poste :</label>
-                    <input type="text" name="poste" class="form-control" id="emp-poste">
+                    <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{poste}">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Grade :</label>
-                    <input type="text" name="grade" class="form-control" id="emp-grade">
+                    <select class="form-select" name="grade" th:field="*{grade}" required>
+                        <option value="">-- Choisir un grade --</option>
+
+                        <option value="JUNIOR">Junior</option>
+                        <option value="INTERMEDIAIRE">Intermédiaire</option>
+                        <option value="SENIOR">Senior</option>
+                        <option value="STAGIAIRE">Stagiaire</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="DIRECTEUR">Directeur</option>
+                    </select>
                 </div>
 
+                <!-- DÉPARTEMENT -->
                 <div class="col-md-6">
-                    <label class="form-label">Rôle :</label>
-                    <input type="text" name="role" class="form-control" id="emp-role">
+                    <label class="form-label">Département :</label>
+                    <select class="form-select" name="departementId">
+                        <option value="">-- Aucun --</option>
+
+                        <option th:each="d : ${departements}"
+                                th:value="${d.id}"
+                                th:selected="${employe.departement != null && employe.departement.id == d.id}"
+                                th:text="${d.nom}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- RÔLE UTILISATEUR -->
+                <div class="col-md-6">
+                    <label class="form-label">Rôle utilisateur :</label>
+                    <select class="form-select" name="role" required>
+                        <option value="">-- Choisir un rôle --</option>
+
+                        <option value="EMPLOYE">Employé</option>
+                        <option value="CHEF_DE_PROJET">Chef de projet</option>
+                        <option value="CHEF_DE_DEPARTEMENT">Chef de département</option>
+                        <option value="ADMINISTRATEUR">Administrateur</option>
+                    </select>
                 </div>
 
             </div>
 
             <div class="text-center mt-4">
-                <!-- Libellé dynamique : Créer ou Mettre à jour -->
-                <button type="submit" class="btn btn-primary px-4" id="submit-btn"
-                        th:text="${employe.id == null ? 'Créer' : 'Mettre à jour'}">
-                </button>
+                <button type="submit" class="btn btn-primary px-4"
+                        th:text="${employe.id == null ? 'Créer' : 'Mettre à jour'}"></button>
 
-                <!-- Annuler renvoie vers la liste des employés -->
                 <a th:href="@{/employes}" class="btn btn-secondary ms-2">Annuler</a>
             </div>
 
@@ -157,6 +196,5 @@
 
     </div>
 </div>
-
 </body>
 </html>

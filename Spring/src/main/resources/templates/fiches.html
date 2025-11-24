@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Fiches de paie</title>
@@ -57,112 +57,130 @@
 
 <body class="bg-light">
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
-        <!-- Bouton Accueil -->
-        <a class="navbar-brand fw-bold" th:href="@{/index}">Système RH</a>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <!-- Bouton Accueil -->
+            <a class="navbar-brand fw-bold" th:href="@{/index}">Système RH</a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/index}">Accueil</a>
-                </li>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/index}">Accueil</a>
+                    </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/employes}">Employés</a>
-                </li>
+                    <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
+                        <a class="nav-link" th:href="@{/employes}">Employés</a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/departements}">Départements</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/departements}">Départements</a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/projets}">Projets</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/projets}">Projets</a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/fiches}">Fiches de paie</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/fiches}">Fiches de paie</a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/profil}">Mon Profil</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profil}">Mon Profil</a>
+                    </li>
 
-                <li class="nav-item ms-2">
-                    <a class="btn btn-logout btn-sm" th:href="@{/logout}">Déconnexion</a>
-                </li>
-            </ul>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-logout btn-sm" th:href="@{/logout}">Déconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+
+        <h2 class="text-center mb-4">Gestion des fiches de paie</h2>
+
+        <div th:if="${session.role == 'ADMINISTRATEUR'}" class="d-flex justify-content-end mb-3">
+            <a th:href="@{/fiches/new}" class="btn btn-success">+ Ajouter une fiche</a>
+        </div>
+
+        <div th:if="${session.role == 'ADMINISTRATEUR'}" class="mb-4">
+
+            <form th:action="@{/fiches}" method="get" class="d-flex gap-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label">Employé</label>
+                    <select class="form-select" name="employeId">
+                        <option value="">-- Tous --</option>
+
+                        <!-- Ajouter chaque employé -->
+                        <option th:each="e : ${employes}"
+                            th:value="${e.id}"
+                            th:text="${e.nom + ' ' + e.prenom}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- FILTRE PAR DATES -->
+                <div class="col-md-3">
+                    <label class="form-label">Date début</label>
+                    <input type="date" class="form-control" name="dateDebut"
+                       th:value="${dateDebut}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" class="form-control" name="dateFin"
+                       th:value="${dateFin}">
+                </div>
+
+                <button class="btn btn-primary">Filtrer</button>
+                <a th:href="@{/fiches/}" class="btn btn-outline-secondary">Réinitialiser</a>
+
+            </form>
         </div>
     </div>
-</nav>
 
-<div class="container mt-5">
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>ID</th>
+                <th>Employé</th>
+                <th>Mois</th>
+                <th>Année</th>
+                <th>Salaire Brut</th>
+                <th>Primes</th>
+                <th>Déductions</th>
+                <th>Net à payer</th>
+                <th>Généré le</th>
+                <th>Actions</th>
+        </tr>
+        </thead>
 
-    <h2 class="text-center mb-4">Gestion des fiches de paie</h2>
-
-    <!-- Bouton affiché seulement si ADMIN -->
-    <!-- <a href="fiche-add.html" class="btn btn-success float-end mb-3">+ Ajouter une fiche</a> -->
-
-    <!-- BLOCS DE FILTRES UNIQUEMENT POUR ADMIN -->
-    <!--
-    <form class="d-flex gap-2 align-items-end mb-3">
-        <div class="col-md-4">
-            <label class="form-label">Employé</label>
-            <select class="form-select">
-                <option>-- Tous --</option>
-                <!-- Dupliquer une option par employé -->
-    <!-- <option>Nom Prénom</option> -->
-    </select>
-</div>
-
-<div class="col-md-3">
-    <label class="form-label">Date début</label>
-    <input type="date" class="form-control">
-</div>
-
-<div class="col-md-3">
-    <label class="form-label">Date fin</label>
-    <input type="date" class="form-control">
-</div>
-
-<button class="btn btn-primary">Rechercher</button>
-<a class="btn btn-outline-secondary">Réinitialiser</a>
-</form>
--->
-
-<table class="table table-bordered table-hover shadow-sm text-center">
-    <thead class="table-dark">
-    <tr>
-        <th>ID</th><th>Employé</th><th>Mois</th><th>Année</th>
-        <th>Primes</th><th>Déductions</th><th>Net</th><th>Généré le</th><th>Actions</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <!-- RÉPÉTER POUR CHAQUE FICHE -->
-    <tr>
-        <td>{{ id }}</td>
-        <td>{{ nom }} {{ prenom }}</td>
-        <td>{{ mois }}</td>
-        <td>{{ annee }}</td>
-        <td>{{ prime }}</td>
-        <td>{{ deduction }}</td>
-        <td>{{ net }}</td>
-        <td>{{ dateGeneration }}</td>
-        <td>
-            <a class="btn btn-sm btn-danger" href="#">Exporter PDF</a>
-        </td>
-    </tr>
-    <!-- FIN DE LA REPETITION -->
-    </tbody>
-</table>
-</div>
-
+        <tbody>
+        <tr th:each="f : ${fiches}">
+            <td th:text="${f.id}"></td>
+            <td th:text="${f.employe.nom + ' ' + f.employe.prenom}"></td>
+            <td th:text="${f.mois}"></td>
+            <td th:text="${f.annee}"></td>
+            <td th:text="${f.salaireBase}"></td>
+            <td th:text="${f.prime}"></td>
+            <td th:text="${f.deduction}"></td>
+            <td th:text="${f.netAPayer}"></td>
+            <td th:text="${f.dateGeneration}"></td>
+            <td>
+                <a class="btn btn-sm btn-danger"
+                th:href="@{/fiches/pdf/{id}(id=${f.id})}">
+                Exporter PDF
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </body>
 </html>

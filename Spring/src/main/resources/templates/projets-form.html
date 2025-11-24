@@ -69,8 +69,7 @@
                         <a class="nav-link" th:href="@{/index}">Accueil</a>
                     </li>
 
-                    <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                    <li class="nav-item">
+                    <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                         <a class="nav-link" th:href="@{/employes}">Employés</a>
                     </li>
 
@@ -102,173 +101,176 @@
 <body class="bg-light">
 
 <div class="container mt-5">
-    <div class="card shadow-sm p-4 mx-auto" style="max-width:600px;">
+    <div class="card shadow-sm p-4 mx-auto" style="max-width:750px;">
 
-        <h2 class="text-center mb-4" id="formTitle"></h2>
+        <h2 class="text-center mb-4"
+            th:text="${projet.id == null ? 'Créer un Projet' : 'Modifier un Projet'}">
+        </h2>
 
-        <form id="projetForm">
+        <form th:action="@{/projets/save}" method="post">
 
-            <input type="hidden" id="projetId">
+            <input type="hidden" name="id" th:value="${projet.id}">
 
-            <!-- Nom projet -->
-            <div class="mb-3" id="nomContainer"></div>
-
-            <!-- Département -->
-            <div class="mb-3" id="depContainer"></div>
-
-            <!-- Description + Dates -->
-            <div id="descriptionDates"></div>
-
-            <!-- État -->
+            <!-- NOM -->
             <div class="mb-3">
-                <label class="form-label">Avancement du projet :</label>
-                <select id="etat" class="form-select" required>
-                    <option value="EN_COURS">En cours</option>
-                    <option value="TERMINE">Terminé</option>
-                    <option value="ANNULE">Annulé</option>
+                <label class="form-label fw-semibold">Nom du projet :</label>
+                <input type="text" class="form-control" name="nom" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+"
+                       th:value="${projet.nom}" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}" required>
+            </div>
+
+            <!-- DÉPARTEMENT -->
+            <div class="mb-3">
+                <label for="departement-select" class="form-label fw-semibold">Département :</label>
+                <select class="form-select"
+                        name="departementId"
+                        id="departement-select"
+                        th:disabled="${session.role != 'ADMINISTRATEUR'}">
+
+                    <option value="">-- Sélectionner un département --</option>
+
+                    <option th:each="d : ${departements}"
+                            th:value="${d.id}"
+                            th:selected="${projet.departement != null && projet.departement.id == d.id}"
+                            th:text="${d.nom}">
+                    </option>
                 </select>
             </div>
 
-            <!-- Budget + Chef -->
-            <div id="budgetChefContainer"></div>
-
-            <!-- Employés -->
+            <!-- DESCRIPTION -->
             <div class="mb-3">
-                <label class="form-label">Employés assignés :</label>
-                <div class="border rounded p-3" id="employeSelect" style="max-height: 250px; overflow-y: auto;"></div>
+                <label class="form-label fw-semibold">Description :</label>
+                <textarea class="form-control" name="description" rows="3"
+                          th:text="${projet.description}" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}"></textarea>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary px-4" id="submitBtn"></button>
-                <a href="projets.html" class="btn btn-secondary ms-2">Annuler</a>
+            <!-- BUDGET -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Budget (€)</label>
+                <input type="number" step="0.01" class="form-control" name="budget"
+                       th:value="${projet.budget}" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}">
             </div>
+
+            <!-- ÉTAT -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">État :</label>
+                <select class="form-select" name="etat" required>
+                    <option th:each="etat : ${T(com.spring.model.EtatProjet).values()}"
+                            th:value="${etat}"
+                            th:selected="${projet.etat == etat}"
+                            th:text="${etat}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- DATES -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Date de début :</label>
+                    <input type="date" class="form-control" name="dateDebut"
+                           th:value="${projet.dateDebut}" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-semibold">Date de fin :</label>
+                    <input type="date" class="form-control" name="dateFin"
+                           th:value="${projet.dateFin}" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}">
+                </div>
+            </div>
+
+            <!-- CHEF DE PROJET -->
+            <div class="mb-3">
+                <label for="chef-select" class="form-label fw-semibold">Chef de Projet :</label>
+                <select class="form-select" name="chefProjetId" id="chef-select" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}">
+                </select>
+            </div>
+
+            <!-- EMPLOYÉS ASSIGNÉS -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Employés affectés :</label>
+
+                <div class="border rounded p-3" id="employes-container"
+                     style="max-height:250px; overflow-y:auto;">
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-primary px-4"
+                        th:text="${projet.id == null ? 'Créer' : 'Mettre à jour'}">
+                </button>
+
+                <a th:href="@{/projets}" class="btn btn-secondary ms-2">Annuler</a>
+            </div>pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+"
 
         </form>
 
     </div>
 </div>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        const departementSelect = document.getElementById("departement-select");
+        const chefSelect = document.getElementById("chef-select");
+        const employesContainer = document.getElementById("employes-container");
 
-<script>
-    // -------------------------------
-    // Variables simulées
-    // -------------------------------
-    const role = "ADMINISTRATEUR";
-    const user = { employe: { departement: { id: 1, nom: "Informatique" }}};
+        // Valeurs déjà existantes du projet (si on est en mode édition)
+        const projetId = document.querySelector("input[name='id']").value;
+        const selectedChefId = /*[[${projet.chefProjet != null ? projet.chefProjet.id : 'null'}]]*/ null;
+        const selectedEmployes = /*[[${projet.employes != null ? projet.employes.![id] : '[]'}]]*/ [];
 
-    const projet = {
-        id: 12,
-        nom: "Migration Serveurs",
-        description: "Projet de modernisation",
-        dateDebut: "2025-01-10",
-        dateFin: "2025-05-22",
-        etat: "EN_COURS",
-        budget: 15000,
-        departement: { id: 1, nom: "Informatique" },
-        chefProjet: { id: 3 },
-        employes: [ { id: 1 }, { id: 2 } ]
-    };
+        function updateLists(deptId) {
+            if (!deptId) return;
 
-    const departements = [
-        { id: 1, nom: "Informatique" },
-        { id: 2, nom: "RH" },
-        { id: 3, nom: "Marketing" }
-    ];
+            // 1) Charger les chefs de projet
+            fetch(`/employes/chefs/${deptId}`)
+                .then(res => res.json())
+                .then(chefs => {
+                    chefSelect.innerHTML = `<option value="">-- Aucun chef --</option>`;
 
-    const assignedEmployees = projet.employes.map(e => e.id);
+                    chefs.forEach(c => {
+                        const selected = (selectedChefId && selectedChefId === c.id) ? "selected" : "";
+                        chefSelect.innerHTML += `
+                        <option value="${c.id}" ${selected}>
+                            ${c.prenom} ${c.nom}
+                        </option>`;
+                    });
+                });
 
-    // -------------------------------
-    // Rendu dynamique HTML
-    // -------------------------------
-    document.getElementById("formTitle").textContent = projet ? "Modifier un Projet" : "Créer un Projet";
-    document.getElementById("submitBtn").textContent = projet ? "Mettre à jour" : "Créer";
+            // 2) Charger les employés NON chefs
+            fetch(`/employes/departement/${deptId}/non-chefs`)
+                .then(res => res.json())
+                .then(emps => {
+                    employesContainer.innerHTML = "";
 
-    // NOM
-    document.getElementById("nomContainer").innerHTML =
-        role === "ADMINISTRATEUR" || role === "CHEF_DE_DEPARTEMENT"
-            ? `<label class="form-label">Nom du projet</label>
-       <input type="text" class="form-control" value="${projet.nom}" required>`
-            : `<label class="form-label">Nom du projet</label>
-       <p class="form-control">${projet.nom}</p>`;
+                    emps.forEach(e => {
+                        const checked = selectedEmployes.includes(e.id) ? "checked" : "";
+                        employesContainer.innerHTML += `
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="checkbox"
+                                name="employesIds"
+                                value="${e.id}"
+                                id="emp${e.id}"
+                                ${checked}>
+                            <label class="form-check-label" for="emp${e.id}">
+                                ${e.prenom} ${e.nom}
+                            </label>
+                        </div>`;
+                    });
+                });
+        }
 
-    // DEPARTEMENT
-    document.getElementById("depContainer").innerHTML =
-        role === "ADMINISTRATEUR"
-            ? `<label class="form-label">Département :</label>
-       <select class="form-select">
-           ${departements.map(dep => `
-               <option value="${dep.id}" ${projet.departement.id === dep.id ? "selected" : ""}>
-                   ${dep.nom}
-               </option>`).join("")}
-       </select>`
-            : `<label class="form-label">Département</label>
-       <p class="form-control">${user.employe.departement.nom}</p>`;
+        // Quand on change le département → mise à jour
+        departementSelect.addEventListener("change", () => {
+            updateLists(departementSelect.value);
+        });
 
-    // DESCRIPTION + DATES
-    document.getElementById("descriptionDates").innerHTML =
-        (role === "ADMINISTRATEUR" || role === "CHEF_DE_DEPARTEMENT")
-            ? `
-    <div class="mb-3">
-        <label class="form-label">Description</label>
-        <textarea class="form-control">${projet.description}</textarea>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Date début</label>
-            <input type="date" class="form-control" value="${projet.dateDebut}">
-        </div>
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Date fin</label>
-            <input type="date" class="form-control" value="${projet.dateFin}">
-        </div>
-    </div>`
-            : `
-    <div class="mb-3">
-        <label class="form-label">Description</label>
-        <p class="form-control">${projet.description}</p>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Date début</label>
-            <p class="form-control">${projet.dateDebut}</p>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Date fin</label>
-            <p class="form-control">${projet.dateFin}</p>
-        </div>
-    </div>`;
-
-    // BUDGET + CHEF
-    document.getElementById("budgetChefContainer").innerHTML =
-        (role === "ADMINISTRATEUR" || role === "CHEF_DE_DEPARTEMENT")
-            ? `
-    <div class="mb-3">
-        <label class="form-label">Budget (€) :</label>
-        <input type="number" class="form-control" value="${projet.budget}">
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Chef de projet :</label>
-        <select class="form-select" id="chefSelect"></select>
-    </div>`
-            : `
-    <div class="mb-3">
-        <label class="form-label">Budget (€)</label>
-        <p class="form-control">${projet.budget}</p>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Chef de projet</label>
-        <p class="form-control">Chef Projet Placeholder</p>
-    </div>`;
-
-    // EMPLOYES (fake)
-    document.getElementById("employeSelect").innerHTML =
-        [1,2,3,4].map(id => `
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" ${assignedEmployees.includes(id) ? "checked" : ""}>
-        <label class="form-check-label">Employé ${id}</label>
-    </div>
-`).join("");
-
+        // Si on est en mode édition → charger automatiquement les valeurs
+        if (departementSelect.value) {
+            updateLists(departementSelect.value);
+        }
+    });
 </script>
+
 
 </body>
 </html>

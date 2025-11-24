@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Projets</title>
@@ -69,8 +69,7 @@
                         <a class="nav-link" th:href="@{/index}">Accueil</a>
                     </li>
 
-                    <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                    <li class="nav-item">
+                    <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                         <a class="nav-link" th:href="@{/employes}">Employés</a>
                     </li>
 
@@ -105,8 +104,10 @@
 
     <h2 class="text-center mb-4">Gestion des projets</h2>
 
-    <div class="d-flex justify-content-end mb-3">
-        <button class="btn btn-success">+ Ajouter un projet</button>
+    <!-- Bouton visible seulement ADMIN -->
+    <div class="d-flex justify-content-end mb-3"
+         th:if="${session.role == 'ADMINISTRATEUR'}">
+        <a class="btn btn-success" th:href="@{/projets/new}">+ Ajouter un projet</a>
     </div>
 
     <table class="table table-bordered table-hover align-middle shadow-sm">
@@ -118,64 +119,55 @@
             <th>Description</th>
             <th>Date début</th>
             <th>Date fin</th>
-            <th>Avancement</th>
-            <th>Budget (€)</th>
+            <th>État</th>
+            <th>Budget</th>
             <th>Chef de projet</th>
             <th>Membres</th>
-            <th>Actions</th>
+            <th th:if="${not(session.role == 'EMPLOYE')}">Actions</th>
         </tr>
         </thead>
 
-        <tbody id="projetTable"></tbody>
+        <tbody>
+
+        <tr th:each="p : ${projets}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.departement.nom}"></td>
+            <td th:text="${p.nom}"></td>
+            <td th:text="${p.description}"></td>
+            <td th:text="${p.dateDebut}"></td>
+            <td th:text="${p.dateFin}"></td>
+            <td th:text="${p.etat}"></td>
+            <td th:text="${p.budget}"></td>
+
+            <td>
+                <span th:if="${p.chefProjet != null}"
+                      th:text="${p.chefProjet.nom + ' ' + p.chefProjet.prenom}">
+                </span>
+                <span th:if="${p.chefProjet == null}" class="text-muted">Non défini</span>
+            </td>
+
+            <td>
+                <ul class="mb-0">
+                    <li th:each="e : ${p.employes}">
+                        <span th:text="${e.prenom + ' ' + e.nom}"></span>
+                        <small class="text-muted">(<span th:text="${e.poste}"></span>)</small>
+                    </li>
+                </ul>
+            </td>
+
+            <td class="text-center" th:if="${not(session.role == 'EMPLOYE')}">
+                <a th:href="@{'/projets/edit/' + ${p.id}}" class="btn btn-warning btn-sm">Modifier</a>
+                <a th:href="@{'/projets/delete/' + ${p.id}}" class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('Supprimer ce projet ?')">
+                    Supprimer
+                </a>
+            </td>
+        </tr>
+
+        </tbody>
     </table>
 
 </div>
-
-<script>
-    // ------------ Variables simulées ----------------
-    const projets = [
-        {
-            id: 1,
-            departement: { nom: "Informatique" },
-            nom: "Refonte SI",
-            description: "Modernisation",
-            dateDebut: "2025-01-10",
-            dateFin: "2025-06-15",
-            etat: "EN_COURS",
-            budget: 12000,
-            chefProjet: { nom: "Dupont", prenom: "Paul" },
-            employes: [
-                { prenom: "Alice", nom: "Martin", poste: "Dev" },
-                { prenom: "John", nom: "Doe", poste: "Analyste" }
-            ]
-        }
-    ];
-
-    // ------------ Rendu tableau ---------------------
-    document.getElementById("projetTable").innerHTML =
-        projets.map(p => `
-<tr>
-    <td>${p.id}</td>
-    <td>${p.departement.nom}</td>
-    <td>${p.nom}</td>
-    <td>${p.description}</td>
-    <td>${p.dateDebut}</td>
-    <td>${p.dateFin}</td>
-    <td>${p.etat}</td>
-    <td>${p.budget}</td>
-    <td>${p.chefProjet ? `${p.chefProjet.nom} ${p.chefProjet.prenom}` : "Non défini"}</td>
-    <td>
-        <ul class="mb-0">
-            ${p.employes.map(e => `<li>${e.prenom} ${e.nom} <small>(${e.poste})</small></li>`).join("")}
-        </ul>
-    </td>
-    <td class="text-center">
-        <button class="btn btn-warning btn-sm">Modifier</button>
-    </td>
-</tr>
-`).join("");
-
-</script>
 
 </body>
 </html>

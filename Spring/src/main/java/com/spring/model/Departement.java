@@ -1,5 +1,6 @@
 package com.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ public class Departement {
 
     // 🔹 Employés du département
     @OneToMany(mappedBy = "departement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Employe> employes = new HashSet<>();
 
     public void addEmploye(Employe e) {

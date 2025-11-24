@@ -73,8 +73,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 

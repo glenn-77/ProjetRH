@@ -1,5 +1,6 @@
 package com.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -41,6 +42,7 @@ public class Projet {
             joinColumns = @JoinColumn(name = "projet_id"),
             inverseJoinColumns = @JoinColumn(name = "employe_id")
     )
+    @JsonIgnore
     private Set<Employe> employes = new HashSet<>();
 
     // 🔹 Chef de projet

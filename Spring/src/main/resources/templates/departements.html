@@ -72,8 +72,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -105,7 +104,9 @@
     <h2 class="text-center mb-4">Gestion des départements</h2>
 
     <!-- Bouton d’ajout si le rôle le permet -->
-    <div id="add-departement-btn"></div>
+    <div class="d-flex justify-content-end align-items-center mb-3" id="add-departement-btn">
+        <a th:href="@{/departements/new}" class="btn btn-success">+ Ajouter un département</a>
+    </div>
 
     <table class="table table-bordered table-hover align-middle shadow-sm">
         <thead class="table-dark text-center">
@@ -114,26 +115,32 @@
             <th>Nom du département</th>
             <th>Chef du département</th>
             <th>Employés</th>
-            <th>Actions</th>
+            <th th:if="${session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT'}">Actions</th>
         </tr>
         </thead>
         <tbody id="departements-table">
-        <!-- Exemple d’item :
-        <tr>
-            <td class="text-center">1</td>
-            <td>Informatique</td>
-            <td>Jean Dupont</td>
-            <td>
-                <ul>
-                    <li>Ali Hassan (Ingénieur)</li>
-                </ul>
-            </td>
-            <td class="text-center">
-                <button class="btn btn-warning btn-sm">Modifier</button>
-                <button class="btn btn-danger btn-sm">Supprimer</button>
-            </td>
-        </tr>
-        -->
+            <tr th:each="d : ${departements}">
+                <td th:text="${d.id}"></td>
+                <td th:text="${d.nom}"></td>
+                <td th:text="${'👔 ' + d.chef.nom + ' ' + d.chef.prenom}"></td>
+                <td>
+                    <ul th:each="e : ${d.employes}" class="mb-0 ps-3">
+                        <li>
+                            <span th:text="${e.nom + ' ' + e.prenom}"></span>
+                            <small class="text-muted" th:text="'(' + ${e.poste} + ')'"></small>
+                        </li>
+                    </ul>
+                </td>
+                <td class="text-center">
+                     <a th:if="${session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT'}" th:href="@{'/departements/edit/' + ${d.id}}" class="btn btn-outline-primary btn-sm">
+                    Modifier
+                    </a>
+                    <a th:if="${session.role == 'ADMINISTRATEUR'}" th:href="@{'/departements/delete/' + ${d.id}}" class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('Supprimer ce département ?')">
+                    Supprimer
+                    </a>
+                </td>
+            </tr>
         </tbody>
     </table>
 

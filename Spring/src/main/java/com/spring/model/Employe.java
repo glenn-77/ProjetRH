@@ -1,5 +1,8 @@
 package com.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -47,10 +50,12 @@ public class Employe {
     // 🔹 Relation ManyToOne : un employé appartient à un département
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departement_id")
+    @JsonBackReference
     private Departement departement;
 
     // 🔹 Relation ManyToMany avec les projets
     @ManyToMany(mappedBy = "employes", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Projet> projets = new HashSet<>();
 
     // 🔹 Relation OneToMany avec les fiches de paie

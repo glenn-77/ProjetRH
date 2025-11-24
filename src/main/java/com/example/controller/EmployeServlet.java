@@ -216,16 +216,6 @@ public class EmployeServlet extends HttpServlet {
 
             emp.setProjets(projetsAffectes);
             employeDAO.update(emp);
-            // --- Vérifie si l'employé est chef de projet ---
-            Utilisateur user = utilisateurDAO.getByEmployeId((int) emp.getId());
-            if (user != null && user.getRole() != null
-                    && user.getRole().getNomRole().equals(NomRole.CHEF_DE_PROJET)) {
-
-                for (Projet p : projetsAffectes) {
-                    p.setChefProjet(emp);
-                    projetDAO.update(p); // ou saveOrUpdate selon ta méthode
-                }
-            }
             response.sendRedirect("employe?action=list");
             return;
         }

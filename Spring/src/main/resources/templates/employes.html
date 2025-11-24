@@ -72,8 +72,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -136,20 +135,28 @@
         </tr>
         </thead>
         <tbody id="employes-table">
-        <!-- Exemple :
-        <tr>
-            <td>MAT001</td>
-            <td>Dupont</td>
-            <td>Jean</td>
-            <td>Informatique</td>
-            <td>Senior</td>
-            <td>Ingénieur</td>
-            <td>Employé</td>
-            <td class="text-center">
-                <button class="btn btn-outline-success btn-sm">Affecter</button>
-            </td>
-        </tr>
-        -->
+            <tr th:each="e : ${employes}">
+                <td th:text="${e.matricule}"></td>
+                <td th:text="${e.nom}"></td>
+                <td th:text="${e.prenom}"></td>
+                <td th:text="${e.departement != null ? e.departement.nom : 'Aucun'}"></td>
+                <td th:text="${e.grade}"></td>
+                <td th:text="${e.poste}"></td>
+                <td th:text="${e.roleNom != null ? e.roleNom : 'Aucun'}"></td>
+
+                <td class="text-center">
+                     <a th:href="@{'/employes/' + ${e.id} + '/projets'}" class="btn btn-outline-success btn-sm">
+                    Affecter
+                    </a>
+                    <a th:href="@{'/employes/edit/' + ${e.id}}" class="btn btn-outline-primary btn-sm">
+                    Modifier
+                     </a>
+                    <a th:href="@{'/employes/delete/' + ${e.id}}" class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('Supprimer cet employé ?')">
+                    Supprimer
+                    </a>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>

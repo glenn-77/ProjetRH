@@ -2,6 +2,7 @@ package com.spring.controller;
 
 import com.spring.model.*;
 import com.spring.service.*;
+import com.spring.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ public class EmployeController {
     private final EmployeService employeService;
     private final DepartementService departementService;
     private final ProjetService projetService;
+    private final UtilisateurRepository utilisateurRepository;
 
     // Liste des employés + recherche
     @GetMapping
@@ -55,7 +57,6 @@ public class EmployeController {
     @PostMapping("/save")
     public String saveEmploye(@ModelAttribute Employe employe,
                               @RequestParam(value = "departementId", required = false) Long departementId,
-                              @RequestParam(value = "creerUtilisateur", required = false) boolean creerUtilisateur,
                               @RequestParam(value = "role", required = false) NomRole nomRole) {
 
         if (departementId != null) {
@@ -68,7 +69,7 @@ public class EmployeController {
                 ? employeService.createEmploye(employe)
                 : employeService.updateEmploye(employe.getId(), employe);
 
-        if (creerUtilisateur && nomRole != null) {
+        if (isNew && nomRole != null) {
             employeService.createUserForEmploye(saved, nomRole);
         }
 
@@ -126,8 +127,35 @@ public class EmployeController {
     // CHEFS PAR DÉPARTEMENT (JSON)
     @GetMapping("/chefs/{deptId}")
     @ResponseBody
-    public List<Employe> getChefs(@PathVariable Long deptId) {
-        return employeService.getChefsByDepartement(deptId);
+    public List<Employe> getChefsProjet(@PathVariable Long deptId) {
+        return employeService.getByDepartement(deptId).stream()
+                .filter(e -> {
+                    Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+                    return (u != null && u.getRole().getNomRole() == NomRole.CHEF_DE_PROJET);
+                })
+                .toList();
     }
+
+
+    @GetMapping("/{id}/salaire")
+    @ResponseBody
+    public Double getSalaireBase(@PathVariable Long id) {
+        Employe e = employeService.getById(id);
+        return (e != null) ? e.getSalaireBase() : null;
+    }
+
+    @GetMapping("/departement/{id}/non-chefs")
+    @ResponseBody
+    public List<EmployeDTO> getEmployesNonChefs(@PathVariable Long id) {
+        return employeService.getByDepartement(id).stream()
+                .filter(e -> {
+                    Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+                    return (u == null || u.getRole().getNomRole() != NomRole.CHEF_DE_PROJET);
+                })
+                .map(e -> new EmployeDTO(e.getId(), e.getNom(), e.getPrenom()))
+                .toList();
+    }
+
+
 
 }

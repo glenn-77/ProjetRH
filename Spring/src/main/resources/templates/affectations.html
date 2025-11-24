@@ -72,8 +72,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -105,36 +104,42 @@
 <div class="container mt-5">
     <div class="card shadow-sm p-4">
         <h3 class="text-center mb-4">
-            Affecter {{employe.nom}} {{employe.prenom}} à des projets
+            Affecter <span th:text="${employe.prenom + ' ' + employe.nom}"></span> à des projets
         </h3>
 
-        <form action="/employe" method="post">
-            <input type="hidden" name="formType" value="affecter">
-            <input type="hidden" name="id" value="{{employe.id}}">
+        <form th:action="@{'/employes/' + ${employe.id} + '/projets'}" method="post">
 
             <div class="mb-3">
-                <label class="form-label">Projets disponibles :</label>
+                <label class="form-label">Projets de son département :</label>
 
-                <!-- Liste des projets à remplir dynamiquement -->
-                <div id="projets-list">
-                    <!-- Exemple d’item généré dynamiquement -->
-                    <!--
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="projets"
-                               value="1" id="projet1" checked>
-                        <label class="form-check-label" for="projet1">
-                            Nom projet — <small class="text-muted">Description</small>
+                <div class="form-check"
+                     th:each="p : ${projets}">
+
+                    <!-- Filtrer uniquement les projets du même département -->
+                    <div th:if="${p.departement != null and p.departement.id == employe.departement.id}">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="projetsIds"
+                               th:id="${'projet' + p.id}"
+                               th:value="${p.id}"
+                               th:checked="${#lists.contains(employe.projets, p)}">
+
+                        <label class="form-check-label" th:for="${'projet' + p.id}">
+                            <span th:text="${p.nom}"></span> —
+                            <small class="text-muted" th:text="${p.description}"></small>
                         </label>
-                    </div>
-                    -->
-                </div>
 
+                    </div>
+
+                </div>
             </div>
 
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary me-2">Enregistrer</button>
-                <a href="/employe?action=list" class="btn btn-secondary">Retour</a>
+                <a th:href="@{/employes}" class="btn btn-secondary">Retour</a>
             </div>
+
         </form>
     </div>
 </div>

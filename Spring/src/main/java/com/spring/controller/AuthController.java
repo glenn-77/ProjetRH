@@ -43,8 +43,8 @@ public class AuthController {
             model.addAttribute("error", "Identifiants invalides");
             return "login";
         }
-
         session.setAttribute("user", user);
+        session.setAttribute("role", user.getRole().getNomRole().name());
         return "redirect:/index";    // ⬅️ important : on renvoie vers /index
     }
 

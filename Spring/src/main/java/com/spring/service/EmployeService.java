@@ -25,7 +25,14 @@ public class EmployeService {
 
     // ----------- CRUD -----------
     public List<Employe> getAll() {
-        return employeRepository.findAll();
+        List<Employe> list = employeRepository.findAll();
+        list.forEach(e -> {
+            Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+            if (u != null) {
+                e.setRoleNom(u.getRole().getNomRole().name());
+            }
+        });
+        return list;
     }
 
     public Employe getById(Long id) {
@@ -68,20 +75,40 @@ public class EmployeService {
 
     // ----------- SEARCH -----------
     public List<Employe> search(String keyword) {
-        if (keyword == null || keyword.isEmpty()) return getAll();
-        return employeRepository.search(keyword);
+        List<Employe> list = employeRepository.search(keyword);
+        list.forEach(e -> {
+            Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+            if (u != null) e.setRoleNom(u.getRole().getNomRole().name());
+        });
+        return list;
     }
 
+
     public List<Employe> sortByGrade() {
-        return employeRepository.findAllByOrderByGradeAsc();
+        List<Employe> list = employeRepository.findAllByOrderByGradeAsc();
+        list.forEach(e -> {
+            Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+            if (u != null) e.setRoleNom(u.getRole().getNomRole().name());
+        });
+        return list;
     }
 
     public List<Employe> sortByPoste() {
-        return employeRepository.findAllByOrderByPosteAsc();
+        List<Employe> list = employeRepository.findAllByOrderByPosteAsc();
+        list.forEach(e -> {
+            Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+            if (u != null) e.setRoleNom(u.getRole().getNomRole().name());
+        });
+        return list;
     }
 
     public List<Employe> getByDepartement(Long deptId) {
-        return employeRepository.findByDepartement_Id(deptId);
+        List<Employe> list = employeRepository.findByDepartement_Id(deptId);
+        list.forEach(e -> {
+            Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
+            if (u != null) e.setRoleNom(u.getRole().getNomRole().name());
+        });
+        return list;
     }
 
     // ----------- PROJETS -----------
@@ -117,9 +144,9 @@ public class EmployeService {
     }
 
     // ----------- UTILISATEUR -----------
-    public Utilisateur createUserForEmploye(Employe employe, NomRole nomRole) {
+    public void createUserForEmploye(Employe employe, NomRole nomRole) {
         Role role = roleRepository.findByNomRole(nomRole);
-        if (role == null) return null;
+        if (role == null) return;
 
         Utilisateur u = Utilisateur.builder()
                 .login(employe.getNom().charAt(0) + "." + employe.getPrenom())
@@ -150,7 +177,7 @@ public class EmployeService {
             emailService.envoyerMail(employe.getEmail(), sujet, contenu);
         }
 
-        return utilisateurRepository.save(u);
+        utilisateurRepository.save(u);
     }
 
     public void handleChefRole(Employe employe, NomRole role) {

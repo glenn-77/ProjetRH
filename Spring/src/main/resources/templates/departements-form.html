@@ -72,8 +72,7 @@
                     <a class="nav-link" th:href="@{/index}">Accueil</a>
                 </li>
 
-                <!-- Visible seulement si l'utilisateur n'est pas EMPLOYE -->
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'ADMINISTRATEUR'}">
                     <a class="nav-link" th:href="@{/employes}">Employés</a>
                 </li>
 
@@ -102,37 +101,68 @@
 </nav>
 
 <div class="container mt-5">
-    <div class="card shadow-sm p-4 mx-auto" style="max-width:600px;">
-        <h2 class="text-center mb-4" id="form-title">Créer un Département</h2>
+    <div class="card shadow-sm p-4 mx-auto" style="max-width:650px;">
 
-        <form action="/departement" method="post">
-            <input type="hidden" name="id" id="departement-id">
+        <h2 class="text-center mb-4">
+            <span th:if="${departement.id == null}">Créer un Département</span>
+            <span th:if="${departement.id != null}">Modifier un Département</span>
+        </h2>
 
-            <div id="admin-fields">
-                <div class="mb-3">
-                    <label class="form-label">Nom :</label>
-                    <input type="text" name="nom" class="form-control" id="departement-nom">
-                </div>
+        <form th:action="@{/departements/save}" method="post" th:object="${departement}">
 
-                <div class="mb-3">
-                    <label class="form-label">Chef de département :</label>
-                    <select name="chefId" class="form-select" id="chef-select">
-                        <option value="">-- Sélectionner un chef --</option>
-                    </select>
-                </div>
+            <!-- ID HIDDEN -->
+            <input type="hidden" th:field="*{id}">
+
+            <!-- NOM -->
+            <div class="mb-3">
+                <label class="form-label">Nom :</label>
+                <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{nom}" th:disabled="${not(session.role == 'ADMINISTRATEUR')}" required>
             </div>
 
+            <!-- CHEF = uniquement rôle CHEF_DE_DEPARTEMENT -->
+            <div class="mb-3">
+                <label class="form-label">Chef de département :</label>
+                <select class="form-select" name="chefId" th:disabled="${not(session.role == 'ADMINISTRATEUR')}">
+                    <option value="">-- Aucun chef --</option>
+
+                    <option th:each="e : ${employes}"
+                            th:if="${e.roleNom != null and e.roleNom == 'CHEF_DE_DEPARTEMENT'}"
+                            th:value="${e.id}"
+                            th:selected="${departement.chef != null and departement.chef.id == e.id}"
+                            th:text="${e.prenom + ' ' + e.nom}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- EMPLOYÉS = tous sauf les chefs -->
             <div class="mb-3">
                 <label class="form-label">Employés du département :</label>
-                <div class="border p-3 rounded" id="employes-container" style="max-height:250px; overflow-y:auto;">
-                    <!-- Cases à cocher générées dynamiquement -->
+
+                <div class="border p-3 rounded" style="max-height:250px; overflow-y:auto;">
+                    <div class="form-check"
+                         th:each="e : ${employes}"
+                         th:if="${e.roleNom == null or e.roleNom != 'CHEF_DE_DEPARTEMENT'}">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="employesIds"
+                               th:id="${'emp' + e.id}"
+                               th:value="${e.id}"
+                               th:checked="${departement.employes != null and #lists.contains(departement.employes, e)}"
+                               th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}">
+
+                        <label class="form-check-label" th:for="${'emp' + e.id}"
+                               th:text="${e.prenom + ' ' + e.nom}">
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary px-4" id="submit-btn">Créer</button>
-                <a href="/departement?action=list" class="btn btn-secondary ms-2">Annuler</a>
+            <div class="text-center mt-4">
+                <button class="btn btn-primary px-4" type="submit">Enregistrer</button>
+                <a class="btn btn-secondary ms-2" th:href="@{/departements}">Annuler</a>
             </div>
+
         </form>
     </div>
 </div>
