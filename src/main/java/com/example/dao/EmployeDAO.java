@@ -1,6 +1,8 @@
 package com.example.dao;
 
+import com.example.model.Departement;
 import com.example.model.Employe;
+import com.example.model.FicheDePaie;
 import com.example.model.Projet;
 import com.example.utils.HibernateUtil;
 import org.hibernate.Session;
@@ -63,18 +65,52 @@ public class EmployeDAO {
      */
     public void delete(int id) {
         Transaction tx = null;
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
+
             Employe e = session.get(Employe.class, id);
-            if (e != null) {
-                session.delete(e);
+            if (e == null) {
+                return;
             }
+
+            // 1) Retirer des projets
+            for (Projet p : e.getProjets()) {
+                p.getEmployes().remove(e);
+                session.merge(p);
+            }
+            e.getProjets().clear();
+
+            // 2) Retirer du département
+            if (e.getDepartement() != null) {
+                Departement d = e.getDepartement();
+                d.getEmployes().remove(e);
+
+                if (d.getChef() != null && d.getChef().getId() == e.getId()) {
+                    d.setChef(null);
+                }
+
+                session.merge(d);
+                e.setDepartement(null);
+            }
+
+            // 3) Supprimer les fiches de paie
+            for (FicheDePaie fp : e.getFichesPaie()) {
+                session.delete(fp);
+            }
+            e.getFichesPaie().clear();
+
+            // 4) Supprimer l'employé
+            session.delete(e);
+
             tx.commit();
+
         } catch (Exception ex) {
             if (tx != null) tx.rollback();
             ex.printStackTrace();
         }
     }
+
 
     /**
      *  Récupère un employé à partir de son ID

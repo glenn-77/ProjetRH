@@ -46,7 +46,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${d.chef != null}">
-                                     ${d.chef.prenom} ${d.chef.nom}
+                                    👔 ${d.chef.prenom} ${d.chef.nom}
                                 </c:when>
                                 <c:otherwise>
                                     <span class="text-muted fst-italic">Aucun</span>

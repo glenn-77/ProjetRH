@@ -114,7 +114,7 @@
             <!-- NOM -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Nom du projet :</label>
-                <input type="text" class="form-control" name="nom" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+"
+                <input type="text" class="form-control only-letters" name="nom"
                        th:value="${projet.nom}" th:disabled="${not(session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT')}" required>
             </div>
 
@@ -200,7 +200,7 @@
                 </button>
 
                 <a th:href="@{/projets}" class="btn btn-secondary ms-2">Annuler</a>
-            </div>pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+"
+            </div>
 
         </form>
 
@@ -270,7 +270,19 @@
         }
     });
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
 
+        // 🔤 LETTRES UNIQUEMENT
+        document.querySelectorAll(".only-letters").forEach(input => {
+            input.addEventListener("input", () => {
+                // Garde uniquement lettres + accents + espace + tirets
+                input.value = input.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s-]/g, "");
+            });
+        });
+
+    });
+</script>
 
 </body>
 </html>

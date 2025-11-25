@@ -114,12 +114,12 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Nom :</label>
-                    <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{nom}" required>
+                    <input type="text" class="form-control only-letters" th:field="*{nom}" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Prénom :</label>
-                    <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{prenom}" required>
+                    <input type="text" class="form-control only-letters" th:field="*{prenom}" required>
                 </div>
 
                 <div class="col-md-6">
@@ -134,12 +134,12 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Téléphone :</label>
-                    <input type="text" pattern="[0-9]+" class="form-control" th:field="*{telephone}">
+                    <input type="text" inputmode="numeric" class="form-control only-numbers" th:field="*{telephone}">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Poste :</label>
-                    <input type="text" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s-]+" class="form-control" th:field="*{poste}">
+                    <input type="text" class="form-control only-letters" th:field="*{poste}">
                 </div>
 
                 <div class="col-md-6">
@@ -196,5 +196,27 @@
 
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        // 🔤 LETTRES UNIQUEMENT
+        document.querySelectorAll(".only-letters").forEach(input => {
+            input.addEventListener("input", () => {
+                // Garde uniquement lettres + accents + espace + tirets
+                input.value = input.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s-]/g, "");
+            });
+        });
+
+        // 🔢 CHIFFRES UNIQUEMENT
+        document.querySelectorAll(".only-numbers").forEach(input => {
+            input.addEventListener("input", () => {
+                // Garde uniquement chiffres
+                input.value = input.value.replace(/[^0-9]/g, "");
+            });
+        });
+
+    });
+</script>
+
 </body>
 </html>

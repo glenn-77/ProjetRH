@@ -138,9 +138,23 @@ public class DepartementServlet extends HttpServlet {
             // 🔍 Vérifie si le chef dirige déjà un autre département
             Departement existing = departementDAO.findByChefId(chefId);
             if (existing != null && (idStr == null || existing.getId() != d.getId())) {
-                existing.setChef(null);
-                departementDAO.update(existing, null);
-                System.out.println("✅ " + chef.getNom() + " retiré du département : " + existing.getNom());
+                request.setAttribute("error", "❌ Cet employé est déjà chef du département : " + existing.getNom());
+                request.setAttribute("departement", d);
+                request.setAttribute("employes", employeDAO.getAll());
+
+                // Liste des chefs pour le formulaire
+                List<Employe> chefs = new ArrayList<>();
+                for (Employe emp : employeDAO.getAll()) {
+                    Utilisateur u = utilisateurDAO.getByEmployeId((int) emp.getId());
+                    if (u != null && u.getRole() != null &&
+                            u.getRole().getNomRole() == NomRole.CHEF_DE_DEPARTEMENT) {
+                        chefs.add(emp);
+                    }
+                }
+                request.setAttribute("chefs", chefs);
+
+                request.getRequestDispatcher("jsp/departements-form.jsp").forward(request, response);
+                return;
             }
 
             // ✅ Lien bidirectionnel

@@ -144,6 +144,8 @@ public class EmployeServlet extends HttpServlet {
             case "delete":
                 try {
                     int idDel = Integer.parseInt(request.getParameter("id"));
+                    Utilisateur u = utilisateurDAO.getByEmployeId(idDel);
+                    utilisateurDAO.delete((int) u.getId());
                     employeDAO.delete(idDel);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -310,6 +312,7 @@ public class EmployeServlet extends HttpServlet {
             user.setMotDePasse(randomPassword);
             user.setEmploye(emp);
             Role role = roleDAO.getById(Integer.parseInt(roleid));
+            emp.setRoleNom(role.getNomRole().name());
             user.setRole(role); // récupère le rôle par défaut
             if (role.getNomRole().equals(NomRole.CHEF_DE_DEPARTEMENT) && deptId > 0) {
                 Departement dep = departementDAO.getById(deptId);
