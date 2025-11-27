@@ -28,13 +28,13 @@ public class AuthServlet extends HttpServlet {
             response.sendRedirect("index.jsp");
         } else {
             request.setAttribute("error", "Identifiants invalides");
-            request.getRequestDispatcher("jsp/login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
-        response.sendRedirect("jsp/login.jsp");
+        response.sendRedirect("login.jsp");
     }
 }

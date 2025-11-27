@@ -16,14 +16,14 @@ public class ProfilServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // 🔒 Récupération de l’utilisateur connecté depuis la session
+        //Récupération de l’utilisateur connecté depuis la session
         Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        // 🧠 Récupération complète de l’employé associé
+        //Récupération complète de l’employé associé
         Employe employe = employeDAO.getById((int) user.getEmploye().getId());
         request.setAttribute("employe", employe);
 
@@ -35,7 +35,7 @@ public class ProfilServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 🔒 Récupération de l’utilisateur connecté depuis la session
+        //Récupération de l’utilisateur connecté depuis la session
         Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect("login.jsp");

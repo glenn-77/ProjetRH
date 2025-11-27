@@ -120,7 +120,7 @@ public class DepartementServlet extends HttpServlet {
 
         Departement d;
 
-        // ✅ Si on modifie un département, on le récupère depuis la base
+        // Si on modifie un département, on le récupère depuis la base
         if (idStr != null && !idStr.isEmpty()) {
             d = departementDAO.getById(Integer.parseInt(idStr));
         } else {
@@ -129,7 +129,7 @@ public class DepartementServlet extends HttpServlet {
 
         d.setNom(nom);
 
-        // 🔹 Gestion du chef
+        // Gestion du chef
         Employe chef;
         if (chefIdStr != null && !chefIdStr.isEmpty()) {
             int chefId = Integer.parseInt(chefIdStr);
@@ -157,7 +157,7 @@ public class DepartementServlet extends HttpServlet {
                 return;
             }
 
-            // ✅ Lien bidirectionnel
+            // Lien bidirectionnel
             chef.setDepartement(d);
             d.setChef(chef);
         } else {

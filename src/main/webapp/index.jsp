@@ -5,40 +5,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Accueil - Gestion RH</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
             background-color: #f8f9fa;
-        }
-        nav.navbar {
-            padding: 0.8rem 1rem;
-        }
-        .nav-link {
-            color: white !important;
-            margin-left: 1rem;
-            transition: color 0.2s, background-color 0.2s;
-            border-radius: 6px;
-            padding: 6px 10px;
-        }
-        .nav-link:hover {
-            background-color: white !important;
-            color: #0d6efd !important;
-        }
-        .btn-logout {
-            background-color: #dc3545;
-            border: none;
-            padding: 0.45rem 0.9rem;
-            border-radius: 0.5rem;
-            color: white;
-            font-weight: 500;
-            margin-left: 1rem;
-            transition: all 0.2s ease-in-out;
-        }
-        .btn-logout:hover {
-            background-color: white;
-            color: #dc3545;
-            border: 1px solid #dc3545;
         }
         footer {
             background-color: #0d6efd;
@@ -50,10 +22,6 @@
             width: 100%;
             font-size: 0.9rem;
         }
-        .welcome {
-            text-align: center;
-            margin-top: 7rem;
-        }
     </style>
 </head>
 
@@ -61,13 +29,77 @@
 
 <jsp:include page="jsp/navbar.jsp"/>
 
-<!-- CONTENU -->
-<main class="container">
-    <div class="welcome">
-        <h1 class="fw-bold mb-3">Bienvenue ${user.employe.prenom} ${user.employe.nom}!</h1>
-        <p class="lead">Gérez facilement vos employés, départements, projets et fiches de paie.</p>
+
+<section class="hero" style="text-align: center;
+    height: 60vh;
+    padding: 40px 20px;
+    color: black;
+    font-weight: bold;
+    text-decoration: underline;
+    background-image: url('https://www.riseup.ai/hubfs/Hubspot%20-%20Featured%20photo%20%20(46).jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.7;">
+    <h2>Bienvenue ${user.employe.prenom} ${user.employe.nom}!</h2>
+</section>
+
+<section class="cards">
+
+    <c:if test="${role == 'ADMINISTRATEUR'}">
+        <div class="card">
+            <div class="icon">&#128101;</div>
+            <h3>Employés</h3>
+            <p>Gérer vos employés</p>
+            <a href="${pageContext.request.contextPath}/employe?action=list" class="btn">En savoir plus</a>
+        </div>
+    </c:if>
+
+    <div class="card">
+        <div class="icon">&#127980;</div>
+        <h3>Département</h3>
+        <c:if test="${role == 'ADMINISTRATEUR' || role == 'CHEF_DE_DEPARTEMENT'}">
+            <p>Gérer votre département</p>
+        </c:if>
+        <c:if test="${not(role == 'ADMINISTRATEUR' || role == 'CHEF_DE_DEPARTEMENT')}">
+            <p>Voir votre département</p>
+        </c:if>
+        <a href="${pageContext.request.contextPath}/departement?action=list" class="btn">En savoir plus</a>
     </div>
-</main>
+
+    <div class="card">
+        <div class="icon">&#128188;</div>
+        <h3>Projets</h3>
+        <c:if test="${role == 'ADMINISTRATEUR' || role == 'CHEF_DE_DEPARTEMENT' || role == 'CHEF_DE_PROJET'}">
+            <p>Gérer vos différents projets</p>
+        </c:if>
+        <c:if test="${role == 'EMPLOYE'}">
+            <p>Voir vos différents projets</p>
+        </c:if>
+        <a href="${pageContext.request.contextPath}/projet?action=list" class="btn">En savoir plus</a>
+    </div>
+
+    <div class="card">
+        <div class="icon">&#128196;</div>
+        <h3>Fiche de paie</h3>
+        <c:if test="${role == 'ADMINISTRATEUR'}">
+            <p>Gérer les fiches de paie de vos employés</p>
+        </c:if>
+        <c:if test="${not(role == 'ADMINISTRATEUR')}">
+            <p>Voir vos fiches de paie</p>
+        </c:if>
+        <a href="${pageContext.request.contextPath}/fiche?action=list" class="btn">En savoir plus</a>
+    </div>
+
+    <div class="card">
+        <div class="icon">&#128100;</div>
+        <h3>Profil</h3>
+        <p>Voir votre profil</p>
+        <a href="${pageContext.request.contextPath}/profil?action=list" class="btn">En savoir plus</a>
+    </div>
+
+</section>
+
 
 <!-- FOOTER -->
 <footer>

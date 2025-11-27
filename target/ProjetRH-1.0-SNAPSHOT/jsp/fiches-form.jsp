@@ -25,7 +25,7 @@
             <!-- Sélection de l'employé -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Employé :</label>
-                <select name="employeId" class="form-select" required>
+                <select name="employeId" id="employe-select" class="form-select" required>
                     <option value="">-- Choisir un employé --</option>
                     <c:forEach var="emp" items="${employes}">
                         <option value="${emp.id}" ${fiche != null && fiche.employe.id == emp.id ? "selected" : ""}>
@@ -52,7 +52,7 @@
             <!-- Salaire de base -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Salaire de base (€) :</label>
-                <input type="number" step="0.01" name="salaireBase" class="form-control"
+                <input type="number" step="0.01" id="salaireBase" name="salaireBase" class="form-control"
                        value="${fiche.salaireBase}" required>
             </div>
 
@@ -80,6 +80,28 @@
         </form>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const employeSelect = document.getElementById("employe-select");
+        const salaireInput = document.getElementById("salaireBase");
+
+        employeSelect.addEventListener("change", () => {
+            const id = employeSelect.value;
+
+            if (!id) {
+                salaireInput.value = "";
+                return;
+            }
+
+            fetch("${pageContext.request.contextPath}/employe?action=getSalaire&id=" + id)
+                .then(res => res.json())
+                .then(data => {
+                    salaireInput.value = data.salaireBase;
+                })
+                .catch(err => console.error("Erreur récupération salaire", err));
+        });
+    });
+</script>
 
 </body>
 </html>

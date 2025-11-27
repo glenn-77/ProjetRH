@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <a href="${pageContext.request.contextPath}/employe?action=list" class="btn btn-secondary">← Retour</a>
+    <a href="${pageContext.request.contextPath}/index.jsp" class="btn btn-secondary">← Retour</a>
 </div>
 
 </body>

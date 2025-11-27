@@ -83,20 +83,20 @@ public class FicheDePaieServlet extends HttpServlet {
                 FicheDePaie fiche = ficheDAO.getById(id);
 
                 try {
-                    // 1️⃣ Génère le PDF sur le serveur
+                    // Génère le PDF sur le serveur
                     String path = getServletContext().getRealPath("/pdf/fiches/fiche_"
                             + fiche.getEmploye().getNom() + "_"
                             + fiche.getAnnee() + "-" + fiche.getMois() + ".pdf");
 
                     generateFichePaiePDF(fiche, path);
 
-                    // 2️⃣ Configure la réponse pour téléchargement
+                    // Configure la réponse pour téléchargement
                     response.setContentType("application/pdf");
                     response.setHeader("Content-Disposition",
                             "attachment; filename=\"fiche_" + fiche.getEmploye().getNom() + "_"
                                     + fiche.getAnnee() + "-" + fiche.getMois() + ".pdf\"");
 
-                    // 3️⃣ Envoie le fichier dans la réponse HTTP
+                    // Envoie le fichier dans la réponse HTTP
                     java.io.File pdfFile = new java.io.File(path);
                     try (java.io.FileInputStream in = new java.io.FileInputStream(pdfFile);
                          java.io.OutputStream out = response.getOutputStream()) {
@@ -183,13 +183,13 @@ public class FicheDePaieServlet extends HttpServlet {
         PdfWriter.getInstance(document, new FileOutputStream(filePath));
         document.open();
 
-        // 🔹 En-tête
+        //En-tête
         Paragraph header = new Paragraph("FICHE DE PAIE", new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD));
         header.setAlignment(Element.ALIGN_CENTER);
         document.add(header);
         document.add(new Paragraph("\n"));
 
-        // 🔹 Infos Employé
+        //Infos Employé
         document.add(new Paragraph("Nom : " + fiche.getEmploye().getNom()));
         document.add(new Paragraph("Prénom : " + fiche.getEmploye().getPrenom()));
         document.add(new Paragraph("Poste : " + fiche.getEmploye().getPoste()));
@@ -197,7 +197,7 @@ public class FicheDePaieServlet extends HttpServlet {
         document.add(new Paragraph("Date de génération : " + fiche.getDateGeneration()));
         document.add(new Paragraph("\n"));
 
-        // 🔹 Tableau des montants
+        //Tableau des montants
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100);
 
@@ -216,7 +216,7 @@ public class FicheDePaieServlet extends HttpServlet {
         document.add(table);
         document.add(new Paragraph("\n"));
 
-        // 🔹 Pied de page
+        // Pied de page
         Paragraph footer = new Paragraph("Document généré automatiquement — " + LocalDate.now(),
                 new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC));
         footer.setAlignment(Element.ALIGN_CENTER);

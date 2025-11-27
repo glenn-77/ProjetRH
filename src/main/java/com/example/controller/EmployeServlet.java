@@ -59,6 +59,29 @@ public class EmployeServlet extends HttpServlet {
                     response.sendRedirect("employe?action=list");
                 }
                 break;
+
+            case "getSalaire":
+                try {
+                    int idSalaire = Integer.parseInt(request.getParameter("id"));
+                    Employe empSalaire = employeDAO.getById(idSalaire);
+
+                    if (empSalaire == null) {
+                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+
+                    double salaire = empSalaire.getSalaireBase();
+
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    response.getWriter().write("{\"salaireBase\": " + salaire + "}");
+
+                } catch (Exception ex) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
+                break;
+
             case "listByDepartement":
                 int depId = Integer.parseInt(request.getParameter("id"));
                 List<Employe> employesDep = employeDAO.getByDepartement(depId);
@@ -308,7 +331,7 @@ public class EmployeServlet extends HttpServlet {
             String roleid = request.getParameter("roleId");
 
             Utilisateur user = new Utilisateur();
-            user.setLogin(emp.getNom().charAt(0) + "." + emp.getPrenom()); // ou e.getMatricule() si tu préfères
+            user.setLogin(emp.getNom().charAt(0) + "." + emp.getPrenom());
             user.setMotDePasse(randomPassword);
             user.setEmploye(emp);
             Role role = roleDAO.getById(Integer.parseInt(roleid));
@@ -317,23 +340,23 @@ public class EmployeServlet extends HttpServlet {
             if (role.getNomRole().equals(NomRole.CHEF_DE_DEPARTEMENT) && deptId > 0) {
                 Departement dep = departementDAO.getById(deptId);
 
-                // 🔹 Récupère les employés déjà associés à ce département
+                // Récupère les employés déjà associés à ce département
                 Set<Employe> employesDepartement = dep.getEmployes() != null
                         ? new HashSet<>(dep.getEmployes())
                         : new HashSet<>();
 
-                // 🔹 Ajoute le nouveau chef s’il n’y est pas encore
+                // Ajoute le nouveau chef s’il n’y est pas encore
                 employesDepartement.add(emp);
 
-                // 🔹 Définit le chef du département
+                // Définit le chef du département
                 dep.setChef(emp);
 
-                // 🔹 Conversion en tableau d’IDs pour update()
+                // Conversion en tableau d’IDs pour update()
                 String[] employeIds = employesDepartement.stream()
                         .map(ei -> String.valueOf(ei.getId()))
                         .toArray(String[]::new);
 
-                // 🔹 Mise à jour en base
+                // Mise à jour en base
                 departementDAO.update(dep, employeIds);
             }
             utilisateurDAO.save(user);
