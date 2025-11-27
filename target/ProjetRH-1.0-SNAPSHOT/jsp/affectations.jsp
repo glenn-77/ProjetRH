@@ -44,10 +44,7 @@
         </form>
     </div>
 </div>
-<!-- FOOTER -->
-<footer>
-    &copy; 2025 - Système de Gestion RH
-</footer>
+
 </body>
 </html>
 
