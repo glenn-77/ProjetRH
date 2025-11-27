@@ -207,5 +207,11 @@ public class EmployeService {
                         utilisateurRepository.findByEmploye_Id(e.getId()).getRole().getNomRole() == NomRole.CHEF_DE_PROJET)
                 .toList();
     }
+
+    public void updatePassword(Utilisateur user) {
+        if (user == null || user.getId() == null) return;
+        utilisateurRepository.save(user);
+    }
+
 }
 
