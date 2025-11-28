@@ -1,164 +1,121 @@
-🧑‍💼 Projet de Gestion RH – JEE & Spring Boot
+# Projet de Gestion RH – JEE & Spring Boot
 
-Auteurs : Owen Paimba-Sail, Glenn Diffo, Mohamed ElGhali Sadiqi, Christelle Millet
+Auteurs : Owen Paimba-Sail, Glenn Diffouo, Mohamed ElGhali Sadiqi, Christelle Millet
 Année : 2025 – 2026
 Encadrant : Mohamed Haddache
 Matière : JEE
 
-📌 Présentation du projet
+## Présentation du projet
 
-Ce projet a pour objectif de développer une application web complète dédiée à la gestion des ressources humaines d’une entreprise.
-Il permet d’administrer les employés, les départements, les projets ainsi que les fiches de paie, tout en intégrant un système d'authentification sécurisé et basé sur les rôles.
+Ce projet propose une application web complète de gestion des ressources humaines. Elle permet d’administrer les employés, les départements, les projets et les fiches de paie, tout en intégrant un système d'authentification basé sur les rôles (Admin, Chef de département, Chef de projet, Employé).
+Le projet existe en deux versions :
 
-Le projet comporte deux versions :
+* Version **JEE** : Servlets, JSP, JSTL, DAO Hibernate.
+* Version **Spring Boot** : Controllers Spring, Thymeleaf, Spring Data JPA.
 
-Une version JEE (Jakarta EE) : Servlets, JSP, JSTL, DAO Hibernate (JPA).
+## Fonctionnalités principales
 
-Une version Spring Boot : Controllers Spring, Thymeleaf, Spring Data JPA, services, templates intégrés.
+### Authentification & rôles
 
-🏗️ Fonctionnalités principales
-🔐 Authentification & rôles
-
-Connexion via identifiant unique + mot de passe.
-
+Connexion via identifiant unique et mot de passe.
 Rôles disponibles : Admin, Chef de département, Chef de projet, Employé.
 
-Permissions dynamiques selon le rôle.
+### Gestion des employés
 
-👥 Gestion des employés
+Création, modification, suppression, recherche avancée.
+Attribution automatique identifiant + mot de passe.
+Consultation projets + fiches de paie.
 
-Création, modification et suppression d’employés.
+### Gestion des départements
 
-Recherche via nom, prénom, matricule ou département.
+Ajout, modification, suppression.
+Chef de département assigné.
+Liste des employés.
 
-Attribution automatique d’identifiant + mot de passe temporaire.
+### Gestion des projets
 
-Consultation des projets et fiches de paie liées.
+Création, modification, suppression.
+Chef de projet assigné.
+Ajout/retrait d’employés aux projets.
 
-🏢 Gestion des départements
+### Gestion des fiches de paie
 
-Ajout, modification et suppression de départements.
+Création, modification, suppression.
+Consultation des fiches existantes.
 
-Attribution d’un chef de département.
+### Profil utilisateur
 
-Liste des employés rattachés.
+Affichage des informations personnelles et changement de mot de passe.
 
-📁 Gestion des projets
+## Arborescence du projet (JEE)
 
-Création, modification, suppression de projets.
-
-Attribution d’un chef de projet.
-
-Ajout ou retrait d’employés dans les projets.
-
-💸 Gestion des fiches de paie
-
-Création et édition d’une fiche.
-
-Export, consultation et suppression de fiches existantes.
-
-👤 Profil utilisateur
-
-Consultation des informations personnelles.
-
-Modification du mot de passe.
-
-📂 Arborescence du projet (version JEE)
+```
 src/
  ├── main/java/com/example/
- │    ├── controller/      → Servlets (AuthServlet, EmployeServlet...)
- │    ├── dao/             → DAO Hibernate
- │    ├── model/           → Entités JPA
- │    └── utils/           → HibernateUtil
+ │    ├── controller/
+ │    ├── dao/
+ │    ├── model/
+ │    └── utils/
  └── main/webapp/
-       ├── jsp/            → JSP (login, employés, projets…)
-       ├── css/            → Styles
+       ├── jsp/
+       ├── css/
        └── index.jsp
+```
 
-📂 Arborescence du projet (version Spring Boot)
+## Arborescence du projet (Spring Boot)
+
+```
 src/
  ├── main/java/com/spring/
- │    ├── controller/      → Controllers Spring MVC
- │    ├── repository/      → Spring Data JPA
- │    ├── service/         → Services métier
- │    └── model/           → Entités
+ │    ├── controller/
+ │    ├── repository/
+ │    ├── service/
+ │    └── model/
  └── main/resources/
-       ├── templates/      → Pages Thymeleaf
+       ├── templates/
        └── application.properties
+```
 
-🗃️ Base de données
+## Base de données
 
 SGBD : MySQL
-
-Script SQL fourni dans le projet
-
 Mapping via JPA/Hibernate
+DDL contrôlé : `spring.jpa.hibernate.ddl-auto=none`
 
-Spring Boot utilise spring.jpa.hibernate.ddl-auto=none pour éviter les altérations automatiques du schéma.
+## Lancer le projet
 
-▶️ Lancer le projet
-✔️ Version JEE
+### Version JEE
 
-Importer le projet sous IntelliJ ou Eclipse.
+1. Importer le projet.
+2. Configurer Tomcat.
+3. Accéder à :
+   `http://localhost:8080/ProjetRH`
 
-Configurer Tomcat (v10+).
+### Version Spring Boot
 
-Démarrer le serveur → accès via :
+1. Importer le projet Maven.
+2. Configurer MySQL dans `application.properties`.
+3. Lancer `Application.java`.
+4. Accéder à :
+   `http://localhost:8080/`
 
-http://localhost:8080/ProjetRH
+## Technologies utilisées
 
-✔️ Version Spring Boot
+### JEE
 
-Importer le projet Maven.
+Jakarta Servlet, JSP, JSTL, Hibernate, MySQL, Tomcat, Bootstrap
 
-Configurer application.properties (BDD).
+### Spring Boot
 
-Lancer la classe Application.java.
+Spring Web, Spring Data JPA, Thymeleaf, Lombok, Spring Mail, MySQL
 
-Accéder au site :
+## Répartition des tâches
 
-http://localhost:8080/
+Owen : Authentification, profil, gestion employés/projets/paie (JEE + Spring)
+Glenn : Gestion projets et départements, intégration DAO et Spring
+Ghali : Rapport, organisation MVC, recherche employé
+Christelle : Interfaces JSP/Thymeleaf, navigation, tests, cohérence visuelle
 
-👨‍💻 Technologies utilisées
-Version JEE
+## Conclusion
 
-Jakarta Servlet & JSP
-
-JSTL
-
-Hibernate (JPA)
-
-MySQL
-
-Tomcat
-
-Bootstrap
-
-Version Spring Boot
-
-Spring Web MVC
-
-Spring Data JPA
-
-Thymeleaf
-
-Spring Mail
-
-Lombok
-
-MySQL
-
-👥 Répartition des tâches
-
-Owen : Authentification, pages profil, affichage et gestion des employés, projets, fiches de paie (JEE & Spring).
-
-Glenn : Gestion projets & départements, interactions DAO, intégration Spring.
-
-Ghali : Rapport, structure MVC, organisation, recherche & filtres employés.
-
-Christelle : Interfaces JSP/Thymeleaf, navigation, cohérence graphique, tests.
-
-✔️ Conclusion
-
-Ce projet nous a permis d'appliquer concrètement les notions de JEE, puis d’approfondir en les portant sur Spring Boot, un framework moderne permettant une meilleure structuration, une configuration simplifiée et une architecture plus robuste.
-La mise en place de rôles, de modules cohérents (employés, projets, départements, paie) et d’un MVC bien organisé nous a permis d’obtenir une application cohérente, fonctionnelle et proche d’un véritable outil RH professionnel.
+Ce projet nous a permis de maîtriser les concepts JEE et d’étendre nos compétences vers Spring Boot. L’intégration d’une architecture MVC claire, de rôles utilisateurs et de modules RH complets nous a permis de produire une application structurée, fonctionnelle et proche d’un outil professionnel.
