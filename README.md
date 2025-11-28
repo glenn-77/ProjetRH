@@ -89,7 +89,7 @@ DDL contrôlé : `spring.jpa.hibernate.ddl-auto=none`
 1. Importer le projet.
 2. Configurer Tomcat.
 3. Configurer MySQL dans `hibernate.cfg.xml`.
-4. Lancer le script MySQL dans `db.sql` pour importer les données.
+4. Lancer le script MySQL dans `schema.sql` pour importer les données.
 5. Accéder à :
    `http://localhost:8080/ProjetRH`
 
@@ -97,7 +97,7 @@ DDL contrôlé : `spring.jpa.hibernate.ddl-auto=none`
 
 1. Importer le projet Maven.
 2. Configurer MySQL dans `application.properties`.
-3. Lancer le script MySQL dans `db.sql` pour importer les données (si pas déjà fait dans la version JEE).
+3. Lancer le script MySQL dans `schema.sql` pour importer les données (si pas déjà fait dans la version JEE).
 4. Lancer `Application.java`.
 5. Accéder à :
    `http://localhost:8085/`
