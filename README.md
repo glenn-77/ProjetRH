@@ -1,6 +1,6 @@
 # Projet de Gestion RH – JEE & Spring Boot
 
-Auteurs : Owen Paimba-Sail, Glenn Diffo, Mohamed ElGhali Sadiqi, Christelle Millet
+Auteurs : Owen Paimba-Sail, Glenn-Airton Diffo, Mohamed ElGhali Sadiqi, Christelle Millet
 Année : 2025 – 2026
 Encadrant : Mohamed Haddache
 Matière : JEE
