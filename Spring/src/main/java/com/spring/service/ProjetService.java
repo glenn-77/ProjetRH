@@ -15,7 +15,11 @@ public class ProjetService {
     private final DepartementRepository departementRepository;
 
     public List<Projet> getAll() {
-        return projetRepository.findAll();
+        return projetRepository.findAllWithDetails();
+    }
+
+    public Projet getByIdWithDetails(Long id) {
+        return projetRepository.findByIdWithDetails(id);
     }
 
     public Projet getById(Long id) {
@@ -70,5 +74,57 @@ public class ProjetService {
 
         projetRepository.save(p);
     }
+
+    public List<Projet> getProjetsForUser(Employe user, String role) {
+
+        switch (role) {
+
+            case "ADMINISTRATEUR":
+                return projetRepository.findAll();
+
+            case "CHEF_DE_DEPARTEMENT":
+                if (user.getDepartement() == null) return List.of();
+                return projetRepository.findByDepartement(user.getDepartement());
+
+            case "CHEF_DE_PROJET":
+                return projetRepository.findByChefProjet(user);
+
+            case "EMPLOYE":
+                return projetRepository.findByEmployes_Id(user.getId());
+
+            default:
+                return List.of();
+        }
+    }
+
+    public boolean canAccessProject(Projet p, Employe user, String role) {
+
+        if (p == null || user == null || role == null) return false;
+
+        switch (role) {
+
+            case "ADMINISTRATEUR":
+                return true;
+
+            case "CHEF_DE_DEPARTEMENT":
+                return p.getDepartement() != null &&
+                        user.getDepartement() != null &&
+                        p.getDepartement().getId().equals(user.getDepartement().getId());
+
+            case "CHEF_DE_PROJET":
+                return p.getChefProjet() != null &&
+                        p.getChefProjet().getId().equals(user.getId());
+
+            case "EMPLOYE":
+                return p.getEmployes()
+                        .stream()
+                        .anyMatch(e -> e.getId().equals(user.getId()));
+
+            default:
+                return false;
+        }
+    }
+
+
 }
 

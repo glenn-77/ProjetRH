@@ -35,7 +35,7 @@ public class Projet {
     private LocalDate dateDebut;
     private LocalDate dateFin;
 
-    // 🔹 Relation ManyToMany avec les employés
+    // Relation ManyToMany avec les employés
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "employe_projet",
@@ -45,12 +45,12 @@ public class Projet {
     @JsonIgnore
     private Set<Employe> employes = new HashSet<>();
 
-    // 🔹 Chef de projet
+    // Chef de projet
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     private Employe chefProjet;
 
-    // 🔹 Département du projet
+    // Département du projet
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departement_id")
     private Departement departement;

@@ -33,7 +33,7 @@ public class EmailUtil {
 
             Transport.send(message);
 
-            System.out.println("✅ E-mail envoyé à " + destinataire);
+            System.out.println("E-mail envoyé à " + destinataire);
         } catch (MessagingException e) {
             e.printStackTrace();
             throw new RuntimeException("Erreur lors de l'envoi du mail : " + e.getMessage());

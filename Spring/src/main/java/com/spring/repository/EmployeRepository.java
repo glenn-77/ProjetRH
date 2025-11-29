@@ -30,4 +30,8 @@ public interface EmployeRepository extends JpaRepository<Employe, Long> {
     List<Employe> search(String keyword);
 
     List<Employe> findByDepartement_NomContainingIgnoreCase(String nomDept);
+
+    @Query("SELECT e FROM Employe e LEFT JOIN FETCH e.departement")
+    List<Employe> findAllWithDepartement();
+
 }

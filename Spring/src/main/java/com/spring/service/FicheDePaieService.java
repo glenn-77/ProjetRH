@@ -15,7 +15,15 @@ public class FicheDePaieService {
     private final EmployeRepository employeRepository;
 
     public List<FicheDePaie> getAll() {
-        return ficheRepository.findAll();
+        return ficheRepository.findAllWithDetails();
+    }
+
+    public FicheDePaie getByIdWithDetails(Long id) {
+        return ficheRepository.findByIdWithDetails(id);
+    }
+
+    public List<FicheDePaie> getAllWithDetails() {
+        return ficheRepository.findAllWithDetails();
     }
 
     public FicheDePaie getById(Long id) {
@@ -49,4 +57,23 @@ public class FicheDePaieService {
     public List<FicheDePaie> search(Long employeId, LocalDate start, LocalDate end) {
         return ficheRepository.findByEmploye_IdAndDateGenerationBetween(employeId, start, end);
     }
+
+    public boolean canAccessFiche(FicheDePaie f, Employe user, String role) {
+
+        if (f == null || user == null || role == null) return false;
+
+        switch (role) {
+            case "ADMINISTRATEUR":
+                return true;
+
+            case "CHEF_DE_DEPARTEMENT":
+            case "CHEF_DE_PROJET":
+            case "EMPLOYE":
+                return f.getEmploye().getId().equals(user.getId());
+
+            default:
+                return false;
+        }
+    }
+
 }

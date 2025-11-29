@@ -143,7 +143,7 @@
                 <span th:if="${p.chefProjet != null}"
                       th:text="${p.chefProjet.nom + ' ' + p.chefProjet.prenom}">
                 </span>
-                <span th:if="${p.chefProjet == null}" class="text-muted">Non défini</span>
+                <span th:if="${p.chefProjet == null}" class="text-muted">-</span>
             </td>
 
             <td>
@@ -155,9 +155,9 @@
                 </ul>
             </td>
 
-            <td class="text-center" th:if="${not(session.role == 'EMPLOYE')}">
+            <td class="text-center" th:if="${not(session.role == 'EMPLOYE') && p.departement.id == session.user.employe.departement.id || session.role == 'ADMINISTRATEUR'}">
                 <a th:href="@{'/projets/edit/' + ${p.id}}" class="btn btn-warning btn-sm">Modifier</a>
-                <a th:href="@{'/projets/delete/' + ${p.id}}" class="btn btn-outline-danger btn-sm"
+                <a th:if="${session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT'}" th:href="@{'/projets/delete/' + ${p.id}}" class="btn btn-outline-danger btn-sm"
                    onclick="return confirm('Supprimer ce projet ?')">
                     Supprimer
                 </a>

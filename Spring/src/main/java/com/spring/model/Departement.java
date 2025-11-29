@@ -22,12 +22,12 @@ public class Departement {
     @Column(nullable = false, unique = true)
     private String nom;
 
-    // 🔹 Chef du département (employé unique)
+    // Chef du département (employé unique)
     @OneToOne
     @JoinColumn(name = "chef_id")
     private Employe chef;
 
-    // 🔹 Employés du département
+    // Employés du département
     @OneToMany(mappedBy = "departement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Employe> employes = new HashSet<>();

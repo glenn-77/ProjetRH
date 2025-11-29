@@ -141,7 +141,7 @@
                 <div class="border p-3 rounded" style="max-height:250px; overflow-y:auto;">
                     <div class="form-check"
                          th:each="e : ${employes}"
-                         th:if="${e.roleNom == null or e.roleNom != 'CHEF_DE_DEPARTEMENT'}">
+                         th:if="${e.roleNom == null or e.roleNom != 'CHEF_DE_DEPARTEMENT' or e.roleNom != 'ADMINISTRATEUR'}">
 
                         <input class="form-check-input"
                                type="checkbox"
@@ -169,7 +169,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
-        // 🔤 LETTRES UNIQUEMENT
+        // LETTRES UNIQUEMENT
         document.querySelectorAll(".only-letters").forEach(input => {
             input.addEventListener("input", () => {
                 // Garde uniquement lettres + accents + espace + tirets

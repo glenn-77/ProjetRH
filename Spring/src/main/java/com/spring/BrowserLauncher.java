@@ -27,9 +27,9 @@ public class BrowserLauncher {
             }
 
             desktop.browse(new URI(url));
-            System.out.println("✅ Navigateur ouvert sur : " + url);
+            System.out.println(" Navigateur ouvert sur : " + url);
         } catch (Exception e) {
-            System.out.println("❌ Impossible d'ouvrir le navigateur : " + e.getMessage());
+            System.out.println(" Impossible d'ouvrir le navigateur : " + e.getMessage());
             e.printStackTrace();
         }
     }

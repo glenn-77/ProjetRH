@@ -245,7 +245,7 @@
                         const checked = selectedEmployes.includes(e.id) ? "checked" : "";
                         employesContainer.innerHTML += `
                         <div class="form-check">
-                            <input class="form-check-input"
+                            <input th:if="${e.nomRole === 'EMPLOYE'}" class="form-check-input"
                                 type="checkbox"
                                 name="employesIds"
                                 value="${e.id}"
@@ -273,7 +273,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
-        // 🔤 LETTRES UNIQUEMENT
+        // LETTRES UNIQUEMENT
         document.querySelectorAll(".only-letters").forEach(input => {
             input.addEventListener("input", () => {
                 // Garde uniquement lettres + accents + espace + tirets

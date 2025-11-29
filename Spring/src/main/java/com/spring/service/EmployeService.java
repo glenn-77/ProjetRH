@@ -25,7 +25,7 @@ public class EmployeService {
 
     // ----------- CRUD -----------
     public List<Employe> getAll() {
-        List<Employe> list = employeRepository.findAll();
+        List<Employe> list = employeRepository.findAllWithDepartement();
         list.forEach(e -> {
             Utilisateur u = utilisateurRepository.findByEmploye_Id(e.getId());
             if (u != null) {
@@ -42,6 +42,11 @@ public class EmployeService {
     public Employe createEmploye(Employe employe) {
         if (employe.getMatricule() == null || employe.getMatricule().isEmpty()) {
             employe.setMatricule(generateMatricule());
+        }
+
+        Departement d = departementRepository.findByNomIgnoreCase("Administration");
+        if (d != null) {
+            if(employe.getRoleNom().equals(NomRole.ADMINISTRATEUR.name())) employe.setDepartement(d);
         }
 
         if (employe.getDateEmbauche() == null)
@@ -70,7 +75,12 @@ public class EmployeService {
     }
 
     public void deleteEmploye(Long id) {
+        Utilisateur u = utilisateurRepository.findByEmploye_Id(id);
+        if (u != null) {
+            utilisateurRepository.delete(u);
+        }
         employeRepository.deleteById(id);
+
     }
 
     // ----------- SEARCH -----------
@@ -179,6 +189,22 @@ public class EmployeService {
 
         utilisateurRepository.save(u);
     }
+
+    public void updateUserRole(Long employeId, NomRole newRole) {
+
+        Utilisateur u = utilisateurRepository.findByEmploye_Id(employeId);
+        if (u == null) return;
+
+        Role role = roleRepository.findByNomRole(newRole);
+        if (role == null) return;
+
+        u.setRole(role);
+        utilisateurRepository.save(u);
+
+        // appliquer la logique spéciale chef (chef département)
+        handleChefRole(u.getEmploye(), newRole);
+    }
+
 
     public void handleChefRole(Employe employe, NomRole role) {
 

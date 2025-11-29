@@ -21,7 +21,7 @@ public class HibernateUtil {
                     .buildSessionFactory();
 
         } catch (Throwable ex) {
-            System.err.println("❌ Erreur lors de la création de la SessionFactory : " + ex);
+            System.err.println(" Erreur lors de la création de la SessionFactory : " + ex);
             ex.printStackTrace();
             throw new ExceptionInInitializerError(ex);
         }

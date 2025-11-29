@@ -19,7 +19,7 @@ public class Utilisateur {
     @Column(nullable = false, unique = true)
     private String login;
 
-    // 🔥 ICI LE POINT IMPORTANT
+    // ICI LE POINT IMPORTANT
     @Column(name = "motDePasse", nullable = false)
     private String motDePasse;
 

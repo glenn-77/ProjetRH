@@ -31,11 +31,13 @@ public class Employe {
     @Column(nullable = false, unique = true)
     private String matricule;
 
+    @Column(nullable = false)
     private String poste;
 
     @Enumerated(EnumType.STRING)
     private Grade grade = Grade.JUNIOR;
 
+    @Column(nullable = false)
     private String adresse;
     private String telephone;
 
@@ -47,25 +49,25 @@ public class Employe {
     @Column(unique = true)
     private String email;
 
-    // 🔹 Relation ManyToOne : un employé appartient à un département
+    // Relation ManyToOne : un employé appartient à un département
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departement_id")
     @JsonBackReference
     private Departement departement;
 
-    // 🔹 Relation ManyToMany avec les projets
+    // Relation ManyToMany avec les projets
     @ManyToMany(mappedBy = "employes", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Projet> projets = new HashSet<>();
 
-    // 🔹 Relation OneToMany avec les fiches de paie
+    // Relation OneToMany avec les fiches de paie
     @OneToMany(mappedBy = "employe", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FicheDePaie> fichesPaie = new HashSet<>();
 
     @Transient
     private String roleNom;
 
-    // 🔹 Méthodes utilitaires
+    //Méthodes utilitaires
     public void addProjet(Projet p) {
         projets.add(p);
         p.getEmployes().add(this);

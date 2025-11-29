@@ -105,7 +105,7 @@
 
     <!-- Bouton d’ajout si le rôle le permet -->
     <div class="d-flex justify-content-end align-items-center mb-3" id="add-departement-btn">
-        <a th:href="@{/departements/new}" class="btn btn-success">+ Ajouter un département</a>
+        <a th:if="${session.role == 'ADMINISTRATEUR'}" th:href="@{/departements/new}" class="btn btn-success">+ Ajouter un département</a>
     </div>
 
     <table class="table table-bordered table-hover align-middle shadow-sm">
@@ -122,7 +122,12 @@
             <tr th:each="d : ${departements}">
                 <td th:text="${d.id}"></td>
                 <td th:text="${d.nom}"></td>
-                <td th:text="${'👔 ' + d.chef.nom + ' ' + d.chef.prenom}"></td>
+                <td>
+                    <span th:if="${d.chef != null}"
+                          th:text="${'👔 ' + d.chef.nom + ' ' + d.chef.prenom}">
+                    </span>
+                    <span th:if="${d.chef == null}" class="text-muted">-</span>
+                </td>
                 <td>
                     <ul th:each="e : ${d.employes}" class="mb-0 ps-3">
                         <li>
@@ -132,7 +137,7 @@
                     </ul>
                 </td>
                 <td class="text-center">
-                     <a th:if="${session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT'}" th:href="@{'/departements/edit/' + ${d.id}}" class="btn btn-outline-primary btn-sm">
+                     <a th:if="${session.role == 'ADMINISTRATEUR' || session.role == 'CHEF_DE_DEPARTEMENT' && !d.getNom().equalsIgnoreCase('Administration')}" th:href="@{'/departements/edit/' + ${d.id}}" class="btn btn-outline-primary btn-sm">
                     Modifier
                     </a>
                     <a th:if="${session.role == 'ADMINISTRATEUR'}" th:href="@{'/departements/delete/' + ${d.id}}" class="btn btn-outline-danger btn-sm"

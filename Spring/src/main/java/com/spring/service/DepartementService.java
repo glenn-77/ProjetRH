@@ -16,7 +16,11 @@ public class DepartementService {
 
     // CRUD
     public List<Departement> getAll() {
-        return departementRepository.findAll();
+        return departementRepository.findAllWithDetails();
+    }
+
+    public Departement getByIdWithDetails(Long id) {
+        return departementRepository.findByIdWithDetails(id);
     }
 
     public Departement getById(Long id) {
@@ -73,5 +77,30 @@ public class DepartementService {
             }
         }
     }
+
+    public boolean canAccessDepartement(Departement d, Employe user, String role) {
+
+        if (d == null || user == null || role == null) return false;
+
+        switch (role) {
+
+            case "ADMINISTRATEUR":
+                return true;
+
+            case "CHEF_DE_DEPARTEMENT":
+                return user.getDepartement() != null &&
+                        d.getId().equals(user.getDepartement().getId());
+
+            case "CHEF_DE_PROJET":
+            case "EMPLOYE":
+                // Ils peuvent seulement voir leur propre département
+                return user.getDepartement() != null &&
+                        d.getId().equals(user.getDepartement().getId());
+
+            default:
+                return false;
+        }
+    }
+
 }
 

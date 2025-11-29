@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS departement(
     id      BIGINT AUTO_INCREMENT PRIMARY KEY,
     nom     VARCHAR(100) NOT NULL,
     chef_id BIGINT
-);
+    );
 
 
 CREATE TABLE IF NOT EXISTS employe (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS employe (
     CONSTRAINT fk_employee_department FOREIGN KEY (departement_id)
     REFERENCES departement(id)
     ON DELETE SET NULL
-);
+    );
 
 CREATE INDEX idx_employee_email ON employe(email);
 CREATE INDEX idx_employee_department ON employe(departement_id);
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS projet (
     CONSTRAINT fk_projet_departement FOREIGN KEY (departement_id) REFERENCES departement(id)
     ON DELETE SET NULL
     ON UPDATE CASCADE
-);
+    );
 
 CREATE TABLE IF NOT EXISTS employe_projet (
     employe_id BIGINT,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS employe_projet (
     CONSTRAINT fk_emp_proj_project FOREIGN KEY (projet_id)
     REFERENCES projet(id)
     ON DELETE CASCADE
-);
+    );
 
 
 CREATE TABLE IF NOT EXISTS fiche_de_paie (
@@ -80,13 +80,13 @@ CREATE TABLE IF NOT EXISTS fiche_de_paie (
     CONSTRAINT fk_payslip_employee FOREIGN KEY (employe_id)
     REFERENCES employe(id)
     ON DELETE CASCADE
-);
+    );
 
 
 CREATE TABLE IF NOT EXISTS role (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nomRole ENUM('ADMINISTRATEUR', 'CHEF_DE_DEPARTEMENT','CHEF_DE_PROJET','EMPLOYE') NOT NULL
-);
+    );
 
 CREATE TABLE IF NOT EXISTS utilisateur (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS utilisateur (
     FOREIGN KEY (role_id) REFERENCES role(id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
-);
+    );
 
 INSERT INTO role (nomRole)
 VALUES ('ADMINISTRATEUR'),
@@ -174,6 +174,3 @@ Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quis
 Curabitur gravida nisi at nibh. In hac habitasse platea dictumst. Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem.', 3044, '2025-08-21', '2025-11-29');
 insert into projet (nom, manager_id, departement_id, description, budget, dateDebut, dateFin) values ('ClearBridge Dividend Strategy ESG ETF', 9, 2, 'Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris viverra diam vitae quam. Suspendisse potenti.', 4032, '2025-05-26', '2025-11-29');
 insert into projet (nom, manager_id, departement_id, description, budget, dateDebut, dateFin) values ('Dynagas LNG Partners LP', 11, 1, 'Pellentesque at nulla. Suspendisse potenti. Cras in purus eu magna vulputate luctus.', 3660, '2025-01-24', '2025-11-29');
-
-
-

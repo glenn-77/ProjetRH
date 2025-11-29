@@ -30,7 +30,7 @@ public class EmployeController {
 
         model.addAttribute("employes", employes);
         model.addAttribute("query", q);
-        return "employes"; // /WEB-INF/jsp/employes.jsp
+        return "employes"; // /WEB-INF/jsp/employes.html
     }
 
     // Formulaire de création
@@ -38,7 +38,7 @@ public class EmployeController {
     public String showCreateForm(Model model) {
         model.addAttribute("employe", new Employe());
         model.addAttribute("departements", departementService.getAll());
-        return "employes-form"; // /WEB-INF/jsp/employes-form.jsp
+        return "employes-form"; // /WEB-INF/jsp/employes-form.html
     }
 
     // Formulaire d'édition
@@ -69,9 +69,15 @@ public class EmployeController {
                 ? employeService.createEmploye(employe)
                 : employeService.updateEmploye(employe.getId(), employe);
 
+        if (!isNew && nomRole != null) {
+            employeService.updateUserRole(saved.getId(), nomRole);
+        }
+
+
         if (isNew && nomRole != null) {
             employeService.createUserForEmploye(saved, nomRole);
         }
+
 
         return "redirect:/employes";
     }
@@ -83,7 +89,7 @@ public class EmployeController {
         return "redirect:/employes";
     }
 
-    // Page d'affectation projets (équivalent affectations.jsp)
+    // Page d'affectation projets (équivalent affectations.html)
     @GetMapping("/{id}/projets")
     public String showAffectationForm(@PathVariable Long id, Model model) {
         Employe e = employeService.getById(id);
@@ -91,7 +97,7 @@ public class EmployeController {
 
         model.addAttribute("employe", e);
         model.addAttribute("projets", projetService.getAll());
-        return "affectations"; // /WEB-INF/jsp/affectations.jsp
+        return "affectations"; // /WEB-INF/jsp/affectations.html
     }
 
     // Enregistrement des affectations projets

@@ -135,10 +135,10 @@ public class DepartementServlet extends HttpServlet {
             int chefId = Integer.parseInt(chefIdStr);
             chef = employeDAO.getById(chefId);
 
-            // 🔍 Vérifie si le chef dirige déjà un autre département
+            // Vérifie si le chef dirige déjà un autre département
             Departement existing = departementDAO.findByChefId(chefId);
             if (existing != null && (idStr == null || existing.getId() != d.getId())) {
-                request.setAttribute("error", "❌ Cet employé est déjà chef du département : " + existing.getNom());
+                request.setAttribute("error", " Cet employé est déjà chef du département : " + existing.getNom());
                 request.setAttribute("departement", d);
                 request.setAttribute("employes", employeDAO.getAll());
 
@@ -165,7 +165,7 @@ public class DepartementServlet extends HttpServlet {
             d.setChef(null);
         }
 
-        // 🔹 Mise à jour des employés du département
+        //  Mise à jour des employés du département
         Set<Employe> selected = new HashSet<>();
         if (employeIds != null) {
             for (String empId : employeIds) {
@@ -176,7 +176,7 @@ public class DepartementServlet extends HttpServlet {
         }
         d.setEmployes(selected);
 
-        // 🔹 Enregistrement
+        //  Enregistrement
         if (idStr != null && !idStr.isEmpty()) {
             departementDAO.update(d, employeIds);
         } else {

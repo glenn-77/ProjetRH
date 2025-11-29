@@ -45,7 +45,7 @@ public class AuthController {
         }
         session.setAttribute("user", user);
         session.setAttribute("role", user.getRole().getNomRole().name());
-        return "redirect:/index";    // ⬅️ important : on renvoie vers /index
+        return "redirect:/index";    //important : on renvoie vers /index
     }
 
     @GetMapping("/logout")

@@ -159,7 +159,7 @@
                 <!-- DÉPARTEMENT -->
                 <div class="col-md-6">
                     <label class="form-label">Département :</label>
-                    <select class="form-select" name="departementId">
+                    <select class="form-select" name="departementId" th:disabled="${session.user.employe.id == employe.id }">
                         <option value="">-- Aucun --</option>
 
                         <option th:each="d : ${departements}"
@@ -173,7 +173,7 @@
                 <!-- RÔLE UTILISATEUR -->
                 <div class="col-md-6">
                     <label class="form-label">Rôle utilisateur :</label>
-                    <select class="form-select" name="role" required>
+                    <select class="form-select" name="role" required th:disabled="${session.user.employe.id == employe.id }">
                         <option value="">-- Choisir un rôle --</option>
 
                         <option value="EMPLOYE">Employé</option>
