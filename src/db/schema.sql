@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS rh_spring;
-USE rh_spring;
+CREATE DATABASE IF NOT EXISTS gestion_rh;
+USE gestion_rh;
 
 
 CREATE TABLE IF NOT EXISTS departement(
