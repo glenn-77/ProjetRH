@@ -64,30 +64,28 @@
                 <label class="form-label">Salaire (€)</label>
                 <input type="number" step="0.01" name="salaireBase" class="form-control" value="${employe.salaireBase}" required>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">Département</label>
-                <select name="departementId" class="form-select" required>
-                    <option value="">-- Choisir un département --</option>
-                    <c:forEach var="dep" items="${departements}">
-                        <option value="${dep.id}" ${employe != null && employe.departement.id == dep.id ? 'selected' : ''}>${dep.nom}</option>
-                    </c:forEach>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Rôle</label>
-                <select name="roleId" class="form-select" required>
-                    <option value="">-- Choisir un rôle --</option>
-                    <c:forEach var="r" items="${roles}">
-                        <option value="${r.id}"
-                            ${user != null && user.role != null && user.role.id == r.id ? 'selected' : ''}>
+             <div class="mb-3">
+                    <label class="form-label">Département</label>
+                    <select name="departementId" class="form-select" required>
+                        <option value="">-- Choisir un département --</option>
+                        <c:forEach var="dep" items="${departements}">
+                            <option value="${dep.id}" ${employe != null && employe.departement.id == dep.id ? 'selected' : ''}>${dep.nom}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+             <div class="mb-3">
+                    <label class="form-label">Rôle</label>
+                    <select name="roleId" class="form-select" required>
+                        <option value="">-- Choisir un rôle --</option>
+                        <c:forEach var="r" items="${roles}">
+                            <option value="${r.id}"
+                                ${user != null && user.role != null && user.role.id == r.id ? 'selected' : ''}>
                                 ${r.nomRole.name()}
-                        </option>
+                            </option>
 
-                    </c:forEach>
-                </select>
-            </div>
+                        </c:forEach>
+                    </select>
+                </div>
 
             <div class="text-center">
                 <button type="submit" class="btn btn-primary px-4">

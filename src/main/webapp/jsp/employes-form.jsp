@@ -64,9 +64,7 @@
                 <label class="form-label">Salaire (€)</label>
                 <input type="number" step="0.01" name="salaireBase" class="form-control" value="${employe.salaireBase}" required>
             </div>
-
-            <c:if test="${user.employe.id != employe.id}">
-                <div class="mb-3">
+             <div class="mb-3">
                     <label class="form-label">Département</label>
                     <select name="departementId" class="form-select" required>
                         <option value="">-- Choisir un département --</option>
@@ -75,17 +73,7 @@
                         </c:forEach>
                     </select>
                 </div>
-            </c:if>
-
-            <c:if test="${user.employe.id == employe.id}">
-                <div class="mb-3">
-                    <label class="form-label">Departement</label>
-                    <p class="form-control">${employe.departement}</p>
-                </div>
-            </c:if>
-
-            <c:if test="${user.employe.id != employe.id}">
-                <div class="mb-3">
+             <div class="mb-3">
                     <label class="form-label">Rôle</label>
                     <select name="roleId" class="form-select" required>
                         <option value="">-- Choisir un rôle --</option>
@@ -98,14 +86,6 @@
                         </c:forEach>
                     </select>
                 </div>
-            </c:if>
-
-            <c:if test="${user.employe.id == employe.id}">
-                <div class="mb-3">
-                    <label class="form-label">Rôle</label>
-                    <p class="form-control">${user.role}</p>
-                </div>
-            </c:if>
 
             <div class="text-center">
                 <button type="submit" class="btn btn-primary px-4">
