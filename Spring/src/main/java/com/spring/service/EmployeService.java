@@ -142,7 +142,7 @@ public class EmployeService {
     public Employe getEmployeWithDetails(Long id) {
         Employe e = employeRepository.findById(id).orElse(null);
         if (e != null) {
-            // ⚡ Forcer le chargement des associations lazy
+            // Forcer le chargement des associations lazy
             if (e.getDepartement() != null) {
                 e.getDepartement().getNom(); // déclenche le chargement
             }
