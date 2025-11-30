@@ -47,7 +47,12 @@
         <c:forEach var="projet" items="${projets}">
             <tr>
                 <td>${projet.id}</td>
-                <td>${projet.departement.nom}</td>
+                <c:if test="${not(projet.departement == null)}}">
+                    <td>${projet.departement.nom}</td>
+                </c:if>
+                <c:if test="${projet.departement == null}">
+                    <td>-</td>
+                </c:if>
                 <td>${projet.nom}</td>
                 <td>${projet.description}</td>
                 <td>${projet.dateDebut}</td>
