@@ -17,7 +17,7 @@ public class DepartementDAO {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
 
-            // 🔹 Synchronisation côté employé (clé étrangère)
+            // Synchronisation côté employé (clé étrangère)
             if (d.getEmployes() != null) {
                 Set<Employe> attached = new HashSet<>();
                 for (Employe e : d.getEmployes()) {
@@ -52,13 +52,13 @@ public class DepartementDAO {
                 attachedChef.setDepartement(managedDept); // chef lié à son département
             }
 
-            // 🔸 Détacher les anciens employés
+            // Détacher les anciens employés
             for (Employe e : managedDept.getEmployes()) {
                 e.setDepartement(null);
             }
             managedDept.getEmployes().clear();
 
-            // 🔸 Ajouter les nouveaux employés
+            // Ajouter les nouveaux employés
             if (employeIds != null) {
                 Set<Employe> attached = new HashSet<>();
                 for (String idStr : employeIds) {
@@ -86,7 +86,7 @@ public class DepartementDAO {
             tx = session.beginTransaction();
             Departement d = session.get(Departement.class, id);
             if (d != null) {
-                // 🔹 Détacher les employés avant suppression
+                // Détacher les employés avant suppression
                 for (Employe e : d.getEmployes()) {
                     e.setDepartement(null);
                 }
